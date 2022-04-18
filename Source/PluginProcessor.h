@@ -58,11 +58,17 @@ public:
 private:
     
     //Variables
-    float depth { 0.0 };
-    float freq { 0.0 };
+    
+    juce::LinearSmoothedValue<float> depth { 0.0 };
+    juce::LinearSmoothedValue<float> freq { 0.0 };
+    juce::LinearSmoothedValue<float> lfoPhase { 0.0 };
+//    float depth { 0.0 };
+//    float freq { 0.0 };
+//    float lfoPhase;
+    
+    
     
     float lfo(float phase);
-    float lfoPhase;
     float inverseSampleRate;
     
     //Parameters

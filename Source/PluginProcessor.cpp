@@ -130,6 +130,10 @@ void MyTremoloAudioProcessor::changeProgramName (int index, const juce::String& 
 //==============================================================================
 void MyTremoloAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
+    depth.reset(sampleRate, 0.0005);
+    freq.reset(sampleRate, 0.0005);
+    lfoPhase.reset(sampleRate, 0.0005);
+    
     lfoPhase = 0.0;
     inverseSampleRate = 1.0 / sampleRate;
 }
@@ -177,9 +181,17 @@ void MyTremoloAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
 
     juce::dsp::AudioBlock<float> block (buffer);
     
-    float currentDepth = *treeState.getRawParameterValue("depth");
-    float currentFrequency = *treeState.getRawParameterValue("freq");
-    float ph = lfoPhase;
+    
+    
+    float myDepth = *treeState.getRawParameterValue("depth");
+    depth.setTargetValue(myDepth);
+    float myFreq = *treeState.getRawParameterValue("freq");
+    freq.setTargetValue(myFreq);
+    
+    float currentDepth = depth.getNextValue();
+    float currentFrequency = freq.getNextValue();
+    
+    float ph = lfoPhase.getNextValue();
     
     for(int channel = 0; channel < block.getNumChannels(); ++channel)
     {
