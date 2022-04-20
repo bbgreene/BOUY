@@ -24,27 +24,29 @@ MyTremoloAudioProcessor::MyTremoloAudioProcessor()
 {
     treeState.addParameterListener("depth", this);
     treeState.addParameterListener("freq", this);
+    treeState.addParameterListener("wave", this);
 }
 
 MyTremoloAudioProcessor::~MyTremoloAudioProcessor()
 {
     treeState.removeParameterListener("depth", this);
     treeState.removeParameterListener("freq", this);
+    treeState.removeParameterListener("wave", this);
 }
 
 juce::AudioProcessorValueTreeState::ParameterLayout MyTremoloAudioProcessor::createParameterLayout()
 {
     std::vector<std::unique_ptr<juce::RangedAudioParameter>> params;
     
-//    juce::StringArray waveformSelector = {"Sine"};
+    juce::StringArray waveformSelector = {"Sine", "Triangle", "Square", "Sloped Square"};
     
     auto pDepth = std::make_unique<juce::AudioParameterFloat>("depth", "Depth", 0.0, 1.0, 0.5);
     auto pFreq = std::make_unique<juce::AudioParameterFloat>("freq", "Freq", juce::NormalisableRange<float>(0.0, 100.0, 0.01, 0.3), 5.0);
-//    auto pWaveform = std::make_unique<juce::AudioParameterChoice>("wave", "Wave", waveformSelector, 0);
+    auto pWaveform = std::make_unique<juce::AudioParameterChoice>("wave", "Wave", waveformSelector, 0);
     
     params.push_back(std::move(pDepth));
     params.push_back(std::move(pFreq));
-//    params.push_back(std::move(pWaveform));
+    params.push_back(std::move(pWaveform));
     
     return { params.begin(), params.end() };
 }
@@ -59,10 +61,10 @@ void MyTremoloAudioProcessor::parameterChanged(const juce::String &parameterID, 
     {
         freq = newValue;
     }
-//    if(parameterID == "wave")
-//    {
-//        wave = newValue;
-//    }
+    if(parameterID == "wave")
+    {
+        waveform = newValue;
+    }
     
 }
 //==============================================================================
@@ -196,7 +198,7 @@ void MyTremoloAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
         for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
             {
                 const float in = channelData[sample];
-                float out = in * (1 - currentDepth + currentDepth * lfo(phase));
+                float out = in * (1 - currentDepth + currentDepth * lfo(phase, waveform));
 
                 channelData[sample] = out;
                 
@@ -234,9 +236,44 @@ void MyTremoloAudioProcessor::setStateInformation (const void* data, int sizeInB
     // whose contents will have been created by the getStateInformation() call.
 }
 
-float MyTremoloAudioProcessor::lfo(float phase)
+float MyTremoloAudioProcessor::lfo(float phase, int choice)
 {
-    return 0.5 + 0.5 * sinf(2.0 * M_PI * phase);
+    switch (choice) {
+        case 0:
+            // sine wave
+            return 0.5 + 0.5 * sinf(2.0 * M_PI * phase);
+            break;
+        case 1:
+            // Triangle
+            if(phase < 0.25f)
+                return 0.5f + 2.0f*phase;
+            else if(phase < 0.75f)
+                return 1.0f - 2.0f*(phase - 0.25f);
+            else
+                return 2.0f*(phase-0.75f);
+            break;
+        case 2:
+            // Square
+            if(phase < 0.5f)
+            return 1.0f;
+            else
+            return 0.0f;
+            break;
+        case 3:
+            // Square with sloped edges
+            if(phase < 0.48f)
+                return 1.0f;
+            else if(phase < 0.5f)
+                return 1.0f - 50.0f*(phase - 0.48f);
+            else if(phase < 0.98f)
+                return 0.0f;
+            else
+                return 50.0f*(phase - 0.98f);
+            
+        default:
+            return 0.5f + 0.5f*sinf(2.0 * M_PI * phase);
+            break;
+    }
 }
 
 //==============================================================================

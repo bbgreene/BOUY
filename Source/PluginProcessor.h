@@ -65,10 +65,11 @@ private:
 //    float depth { 0.0 };
 //    float freq { 0.0 };
 //    float lfoPhase;
-
     
-    float lfo(float phase);
+
+    float lfo(float phase, int choice);
     float inverseSampleRate;
+    int waveform = 0;
     
     //Parameters
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
