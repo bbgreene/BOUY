@@ -25,6 +25,7 @@ MyTremoloAudioProcessor::MyTremoloAudioProcessor()
     treeState.addParameterListener("depth", this);
     treeState.addParameterListener("freq", this);
     treeState.addParameterListener("wave", this);
+    treeState.addParameterListener("multiply", this);
 }
 
 MyTremoloAudioProcessor::~MyTremoloAudioProcessor()
@@ -32,6 +33,7 @@ MyTremoloAudioProcessor::~MyTremoloAudioProcessor()
     treeState.removeParameterListener("depth", this);
     treeState.removeParameterListener("freq", this);
     treeState.removeParameterListener("wave", this);
+    treeState.removeParameterListener("multiply", this);
 }
 
 juce::AudioProcessorValueTreeState::ParameterLayout MyTremoloAudioProcessor::createParameterLayout()
@@ -43,10 +45,12 @@ juce::AudioProcessorValueTreeState::ParameterLayout MyTremoloAudioProcessor::cre
     auto pDepth = std::make_unique<juce::AudioParameterFloat>("depth", "Depth", 0.0, 1.0, 0.5);
     auto pFreq = std::make_unique<juce::AudioParameterFloat>("freq", "Freq", juce::NormalisableRange<float>(0.0, 100.0, 0.01, 0.3), 5.0);
     auto pWaveform = std::make_unique<juce::AudioParameterChoice>("wave", "Wave", waveformSelector, 0);
+    auto pMultiply = std::make_unique<juce::AudioParameterBool>("multiply", "Multiply x 2", 0);
     
     params.push_back(std::move(pDepth));
     params.push_back(std::move(pFreq));
     params.push_back(std::move(pWaveform));
+    params.push_back(std::move(pMultiply));
     
     return { params.begin(), params.end() };
 }
@@ -65,7 +69,10 @@ void MyTremoloAudioProcessor::parameterChanged(const juce::String &parameterID, 
     {
         waveform = newValue;
     }
-    
+    if(parameterID == "multiply")
+    {
+        multiply = newValue;
+    }
 }
 //==============================================================================
 const juce::String MyTremoloAudioProcessor::getName() const
@@ -137,6 +144,7 @@ void MyTremoloAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBl
     lfoPhase.reset(sampleRate, 0.0005);
     
     waveform = treeState.getRawParameterValue("wave")->load();
+    multiply = *treeState.getRawParameterValue("multiply");
         
     lfoPhase = 0.0;
     inverseSampleRate = 1.0 / sampleRate;
@@ -190,6 +198,10 @@ void MyTremoloAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     
     float currentDepth = depth.getNextValue();
     float currentFrequency = freq.getNextValue();
+    if(multiply)
+    {
+    currentFrequency *= 2;
+    }
     float phase = lfoPhase.getNextValue();
         
     for (int channel = 0; channel < totalNumInputChannels; ++channel)
@@ -200,6 +212,7 @@ void MyTremoloAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
         for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
             {
                 const float in = channelData[sample];
+                // Tremolo
                 float out = in * (1 - currentDepth + currentDepth * lfo(phase, waveform));
 
                 channelData[sample] = out;
