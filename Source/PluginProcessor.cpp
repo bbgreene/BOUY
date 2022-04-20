@@ -136,6 +136,8 @@ void MyTremoloAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBl
     freq.reset(sampleRate, 0.0005);
     lfoPhase.reset(sampleRate, 0.0005);
     
+    waveform = treeState.getRawParameterValue("wave")->load();
+        
     lfoPhase = 0.0;
     inverseSampleRate = 1.0 / sampleRate;
 }
@@ -202,6 +204,7 @@ void MyTremoloAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
 
                 channelData[sample] = out;
                 
+                // Update the carrier and LFO phases, keeping them in the range 0-1
                 phase += currentFrequency * inverseSampleRate;
                 if (phase >= 1.0)
                 phase -= 1.0;
@@ -225,15 +228,20 @@ juce::AudioProcessorEditor* MyTremoloAudioProcessor::createEditor()
 //==============================================================================
 void MyTremoloAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
-    // You should use this method to store your parameters in the memory block.
-    // You could do that either as raw data, or use the XML or ValueTree classes
-    // as intermediaries to make it easy to save and load complex data.
+    // Save params
+    juce::MemoryOutputStream stream(destData, false);
+    treeState.state.writeToStream(stream);
 }
 
 void MyTremoloAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
-    // You should use this method to restore your parameters from this memory block,
-    // whose contents will have been created by the getStateInformation() call.
+    // Recall params
+    auto tree = juce::ValueTree::readFromData(data, size_t(sizeInBytes));
+        
+    if(tree.isValid())
+    {
+        treeState.replaceState(tree);
+    }
 }
 
 float MyTremoloAudioProcessor::lfo(float phase, int choice)
