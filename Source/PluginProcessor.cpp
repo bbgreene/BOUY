@@ -39,7 +39,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout MyTremoloAudioProcessor::cre
 //    juce::StringArray waveformSelector = {"Sine"};
     
     auto pDepth = std::make_unique<juce::AudioParameterFloat>("depth", "Depth", 0.0, 1.0, 0.5);
-    auto pFreq = std::make_unique<juce::AudioParameterFloat>("freq", "Freq", 0.0, 10.0, 2.0);
+    auto pFreq = std::make_unique<juce::AudioParameterFloat>("freq", "Freq", juce::NormalisableRange<float>(0.0, 100.0, 0.01, 0.3), 5.0);
 //    auto pWaveform = std::make_unique<juce::AudioParameterChoice>("wave", "Wave", waveformSelector, 0);
     
     params.push_back(std::move(pDepth));
