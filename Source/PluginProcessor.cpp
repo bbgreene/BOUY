@@ -178,10 +178,6 @@ void MyTremoloAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
-
-    juce::dsp::AudioBlock<float> block (buffer);
-    
-    
     
     float myDepth = *treeState.getRawParameterValue("depth");
     depth.setTargetValue(myDepth);
@@ -190,27 +186,26 @@ void MyTremoloAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     
     float currentDepth = depth.getNextValue();
     float currentFrequency = freq.getNextValue();
-    
-    float ph = lfoPhase.getNextValue();
-    
-    for(int channel = 0; channel < block.getNumChannels(); ++channel)
-    {
-        auto* channelData = block.getChannelPointer(channel);
+    float phase = lfoPhase.getNextValue();
         
-        for(int sample = 0; sample < block.getNumSamples(); ++sample)
-        {
-            const float in = channelData[sample];
-            
-            channelData[sample] = in * (1.0 - currentDepth * lfo(ph));
-            
-            ph += currentFrequency * inverseSampleRate;
-            if (ph >= 1.0)
-                ph -= 1.0;
-        }
+    for (int channel = 0; channel < totalNumInputChannels; ++channel)
+    {
+        auto* channelData = buffer.getWritePointer(channel);
+        phase = lfoPhase.getNextValue();
+    
+        for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
+            {
+                const float in = channelData[sample];
+                float out = in * (1 - currentDepth + currentDepth * lfo(phase));
+
+                channelData[sample] = out;
+                
+                phase += currentFrequency * inverseSampleRate;
+                if (phase >= 1.0)
+                phase -= 1.0;
+            }
     }
-    
-    lfoPhase = ph;
-    
+    lfoPhase = phase;
 }
 
 //==============================================================================
@@ -241,7 +236,7 @@ void MyTremoloAudioProcessor::setStateInformation (const void* data, int sizeInB
 
 float MyTremoloAudioProcessor::lfo(float phase)
 {
-    return 0.5 + 0.5*sinf(2.0*M_PI * phase);
+    return 0.5 + 0.5 * sinf(2.0 * M_PI * phase);
 }
 
 //==============================================================================

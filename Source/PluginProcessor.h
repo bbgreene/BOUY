@@ -65,8 +65,7 @@ private:
 //    float depth { 0.0 };
 //    float freq { 0.0 };
 //    float lfoPhase;
-    
-    
+
     
     float lfo(float phase);
     float inverseSampleRate;
