@@ -22,8 +22,8 @@ MyTremoloAudioProcessor::MyTremoloAudioProcessor()
                        ), treeState(*this, nullptr, "PARAMETERS", createParameterLayout())
 #endif
 {
-    treeState.addParameterListener("depth", this);
-    treeState.addParameterListener("freq", this);
+    treeState.addParameterListener("depth one", this);
+    treeState.addParameterListener("freq one", this);
     treeState.addParameterListener("wave", this);
     treeState.addParameterListener("multiplier", this);
     treeState.addParameterListener("depth two", this);
@@ -32,8 +32,8 @@ MyTremoloAudioProcessor::MyTremoloAudioProcessor()
 
 MyTremoloAudioProcessor::~MyTremoloAudioProcessor()
 {
-    treeState.removeParameterListener("depth", this);
-    treeState.removeParameterListener("freq", this);
+    treeState.removeParameterListener("depth one", this);
+    treeState.removeParameterListener("freq one", this);
     treeState.removeParameterListener("wave", this);
     treeState.removeParameterListener("multiplier", this);
     treeState.removeParameterListener("depth two", this);
@@ -47,15 +47,15 @@ juce::AudioProcessorValueTreeState::ParameterLayout MyTremoloAudioProcessor::cre
     //LFO One waveform names
     juce::StringArray waveformSelector = {"Sine", "Triangle", "Square", "Sloped Square", "Ring"};
     
-    auto pDepth = std::make_unique<juce::AudioParameterFloat>("depth", "Depth", 0.0, 1.0, 0.5);
-    auto pFreq = std::make_unique<juce::AudioParameterFloat>("freq", "Freq", juce::NormalisableRange<float>(0.0, 100.0, 0.01, 0.3), 5.0);
+    auto pDepthOne = std::make_unique<juce::AudioParameterFloat>("depth one", "Depth One", 0.0, 1.0, 0.5);
+    auto pFreqOne = std::make_unique<juce::AudioParameterFloat>("freq one", "Freq One", juce::NormalisableRange<float>(0.0, 100.0, 0.01, 0.3), 5.0);
     auto pWaveform = std::make_unique<juce::AudioParameterChoice>("wave", "Wave", waveformSelector, 0);
     auto pMultiplier = std::make_unique<juce::AudioParameterInt>("multiplier", "Multiplier", 0, 4, 1);
-    auto pDepthTwo = std::make_unique<juce::AudioParameterFloat>("depth two", "Depth Two", 0.0, 100.0, 0.5);
+    auto pDepthTwo = std::make_unique<juce::AudioParameterFloat>("depth two", "Depth Two", 0.0, 500.0, 0.5);
     auto pFreqTwo = std::make_unique<juce::AudioParameterFloat>("freq two", "Freq Two", juce::NormalisableRange<float>(0.0, 1.0, 0.01, 0.3), 5.0);
     
-    params.push_back(std::move(pDepth));
-    params.push_back(std::move(pFreq));
+    params.push_back(std::move(pDepthOne));
+    params.push_back(std::move(pFreqOne));
     params.push_back(std::move(pWaveform));
     params.push_back(std::move(pMultiplier));
     params.push_back(std::move(pDepthTwo));
@@ -66,13 +66,13 @@ juce::AudioProcessorValueTreeState::ParameterLayout MyTremoloAudioProcessor::cre
 
 void MyTremoloAudioProcessor::parameterChanged(const juce::String &parameterID, float newValue)
 {
-    if(parameterID == "depth")
+    if(parameterID == "depth one")
     {
-        depth = newValue;
+        depthOne = newValue;
     }
-    if(parameterID == "freq")
+    if(parameterID == "freq one")
     {
-        freq = newValue;
+        freqOne = newValue;
     }
     if(parameterID == "wave")
     {
@@ -156,8 +156,8 @@ void MyTremoloAudioProcessor::changeProgramName (int index, const juce::String& 
 //==============================================================================
 void MyTremoloAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    depth.reset(sampleRate, 0.0005);
-    freq.reset(sampleRate, 0.0005);
+    depthOne.reset(sampleRate, 0.0005);
+    freqOne.reset(sampleRate, 0.0005);
     depthTwo.reset(sampleRate, 0.0005);
     freqTwo.reset(sampleRate, 0.0005);
     lfoOnePhase.reset(sampleRate, 0.0005);
@@ -213,13 +213,13 @@ void MyTremoloAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
         buffer.clear (i, 0, buffer.getNumSamples());
     
     //LFO One parameters
-    float myDepth = *treeState.getRawParameterValue("depth");
-    depth.setTargetValue(myDepth);
-    float myFreq = *treeState.getRawParameterValue("freq");
-    freq.setTargetValue(myFreq);
+    float myDepthOne = *treeState.getRawParameterValue("depth one");
+    depthOne.setTargetValue(myDepthOne);
+    float myFreqOne = *treeState.getRawParameterValue("freq one");
+    freqOne.setTargetValue(myFreqOne);
     
-    float currentDepth = depth.getNextValue();
-    float currentFrequency = freq.getNextValue();
+    float currentDepthOne = depthOne.getNextValue();
+    float currentFrequencyOne = freqOne.getNextValue();
     
     //LFO Two parameters
     float myDepthTwo = *treeState.getRawParameterValue("depth two");
@@ -233,41 +233,37 @@ void MyTremoloAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     //Multiplier
     if(multiplier == 0)
     {
-        currentFrequency *= 0.5; // this makes '0' half the freq of LFO - need to use a somehting else for this!
+        currentFrequencyOne *= 0.5; // this makes '0' half the freq of LFO - need to use a somehting else for this!
     }
     else
     {
-        currentFrequency *= multiplier;
+        currentFrequencyOne *= multiplier;
     }
     
-    float phase = lfoOnePhase.getNextValue();
+    float phaseOne = lfoOnePhase.getNextValue();
     float phaseTwo = lfoTwoPhase.getNextValue();
     
     //Processing Tremolo
     for (int channel = 0; channel < totalNumInputChannels; ++channel)
     {
         auto* channelData = buffer.getWritePointer(channel);
-        phase = lfoOnePhase.getNextValue();
+        phaseOne = lfoOnePhase.getNextValue();
         phaseTwo = lfoTwoPhase.getNextValue();
 
         for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
             {
                 const float in = channelData[sample];
                 // Tremolo
-//                float out = in * (1 - currentDepth + currentDepth * lfoOne(phase, waveform));
-//                channelData[sample] = out;
-//
-                //LFO Two test with LFO one
-                float out = in * (1 - currentDepth + currentDepth * lfoOne(phase, waveform));
+                float out = in * (1 - currentDepthOne + currentDepthOne * lfoOne(phaseOne, waveform));
                 channelData[sample] = out;
-                
+
                 // lfo two output
                 float lfoTwoOut = currentDepthTwo * lfoTwo(phaseTwo);
 
                 // Update the carrier and LFO One phases, keeping them in the range 0-1. Here is were LFO two is modulating freq of LFO one
-                phase += (currentFrequency + lfoTwoOut) * inverseSampleRate;
-                if (phase >= 1.0)
-                phase -= 1.0;
+                phaseOne += (currentFrequencyOne + lfoTwoOut) * inverseSampleRate;
+                if (phaseOne >= 1.0)
+                phaseOne -= 1.0;
                 
                 // Update the carrier and LFO Two phases, keeping them in the range 0-1
                 phaseTwo += currentFrequencyTwo * inverseSampleRate;
@@ -275,7 +271,7 @@ void MyTremoloAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
                 phaseTwo -= 1.0;
             }
     }
-    lfoOnePhase = phase;
+    lfoOnePhase = phaseOne;
     lfoTwoPhase = phaseTwo;
 }
 

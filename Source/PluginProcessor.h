@@ -58,8 +58,8 @@ public:
 private:
     
     //Variables
-    juce::LinearSmoothedValue<float> depth { 0.0 };
-    juce::LinearSmoothedValue<float> freq { 0.0 };
+    juce::LinearSmoothedValue<float> depthOne { 0.0 };
+    juce::LinearSmoothedValue<float> freqOne { 0.0 };
     juce::LinearSmoothedValue<float> lfoOnePhase { 0.0 };
     
     juce::LinearSmoothedValue<float> depthTwo { 0.0 };
