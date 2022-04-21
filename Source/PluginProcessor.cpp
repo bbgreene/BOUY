@@ -26,6 +26,8 @@ MyTremoloAudioProcessor::MyTremoloAudioProcessor()
     treeState.addParameterListener("freq", this);
     treeState.addParameterListener("wave", this);
     treeState.addParameterListener("multiplier", this);
+    treeState.addParameterListener("depth two", this);
+    treeState.addParameterListener("freq two", this);
 }
 
 MyTremoloAudioProcessor::~MyTremoloAudioProcessor()
@@ -34,6 +36,8 @@ MyTremoloAudioProcessor::~MyTremoloAudioProcessor()
     treeState.removeParameterListener("freq", this);
     treeState.removeParameterListener("wave", this);
     treeState.removeParameterListener("multiplier", this);
+    treeState.removeParameterListener("depth two", this);
+    treeState.removeParameterListener("freq two", this);
 }
 
 juce::AudioProcessorValueTreeState::ParameterLayout MyTremoloAudioProcessor::createParameterLayout()
@@ -47,11 +51,15 @@ juce::AudioProcessorValueTreeState::ParameterLayout MyTremoloAudioProcessor::cre
     auto pFreq = std::make_unique<juce::AudioParameterFloat>("freq", "Freq", juce::NormalisableRange<float>(0.0, 100.0, 0.01, 0.3), 5.0);
     auto pWaveform = std::make_unique<juce::AudioParameterChoice>("wave", "Wave", waveformSelector, 0);
     auto pMultiplier = std::make_unique<juce::AudioParameterInt>("multiplier", "Multiplier", 0, 4, 1);
+    auto pDepthTwo = std::make_unique<juce::AudioParameterFloat>("depth two", "Depth Two", 0.0, 100.0, 0.5);
+    auto pFreqTwo = std::make_unique<juce::AudioParameterFloat>("freq two", "Freq Two", juce::NormalisableRange<float>(0.0, 1.0, 0.01, 0.3), 5.0);
     
     params.push_back(std::move(pDepth));
     params.push_back(std::move(pFreq));
     params.push_back(std::move(pWaveform));
     params.push_back(std::move(pMultiplier));
+    params.push_back(std::move(pDepthTwo));
+    params.push_back(std::move(pFreqTwo));
     
     return { params.begin(), params.end() };
 }
@@ -73,6 +81,14 @@ void MyTremoloAudioProcessor::parameterChanged(const juce::String &parameterID, 
     if(parameterID == "multiplier")
     {
         multiplier = newValue;
+    }
+    if(parameterID == "depth two")
+    {
+        depthTwo = newValue;
+    }
+    if(parameterID == "freq two")
+    {
+        freqTwo = newValue;
     }
 }
 //==============================================================================
@@ -142,12 +158,16 @@ void MyTremoloAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBl
 {
     depth.reset(sampleRate, 0.0005);
     freq.reset(sampleRate, 0.0005);
-    lfoPhase.reset(sampleRate, 0.0005);
+    depthTwo.reset(sampleRate, 0.0005);
+    freqTwo.reset(sampleRate, 0.0005);
+    lfoOnePhase.reset(sampleRate, 0.0005);
+    lfoTwoPhase.reset(sampleRate, 0.0005);
     
     waveform = treeState.getRawParameterValue("wave")->load();
     multiplier = *treeState.getRawParameterValue("multiplier");
         
-    lfoPhase = 0.0;
+    lfoOnePhase = 0.0;
+    lfoTwoPhase = 0.0;
     inverseSampleRate = 1.0 / sampleRate;
 }
 
@@ -201,6 +221,15 @@ void MyTremoloAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     float currentDepth = depth.getNextValue();
     float currentFrequency = freq.getNextValue();
     
+    //LFO Two parameters
+    float myDepthTwo = *treeState.getRawParameterValue("depth two");
+    depthTwo.setTargetValue(myDepthTwo);
+    float myFreqTwo = *treeState.getRawParameterValue("freq two");
+    freqTwo.setTargetValue(myFreqTwo);
+    
+    float currentDepthTwo = depthTwo.getNextValue();
+    float currentFrequencyTwo = freqTwo.getNextValue();
+        
     //Multiplier
     if(multiplier == 0)
     {
@@ -211,28 +240,43 @@ void MyTremoloAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
         currentFrequency *= multiplier;
     }
     
-    float phase = lfoPhase.getNextValue();
-        
+    float phase = lfoOnePhase.getNextValue();
+    float phaseTwo = lfoTwoPhase.getNextValue();
+    
     //Processing Tremolo
     for (int channel = 0; channel < totalNumInputChannels; ++channel)
     {
         auto* channelData = buffer.getWritePointer(channel);
-        phase = lfoPhase.getNextValue();
-    
+        phase = lfoOnePhase.getNextValue();
+        phaseTwo = lfoTwoPhase.getNextValue();
+
         for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
             {
                 const float in = channelData[sample];
                 // Tremolo
+//                float out = in * (1 - currentDepth + currentDepth * lfoOne(phase, waveform));
+//                channelData[sample] = out;
+//
+                //LFO Two test with LFO one
                 float out = in * (1 - currentDepth + currentDepth * lfoOne(phase, waveform));
                 channelData[sample] = out;
                 
-                // Update the carrier and LFO phases, keeping them in the range 0-1
-                phase += currentFrequency * inverseSampleRate;
+                // lfo two output
+                float lfoTwoOut = currentDepthTwo * lfoTwo(phaseTwo);
+
+                // Update the carrier and LFO One phases, keeping them in the range 0-1. Here is were LFO two is modulating freq of LFO one
+                phase += (currentFrequency + lfoTwoOut) * inverseSampleRate;
                 if (phase >= 1.0)
                 phase -= 1.0;
+                
+                // Update the carrier and LFO Two phases, keeping them in the range 0-1
+                phaseTwo += currentFrequencyTwo * inverseSampleRate;
+                if (phaseTwo >= 1.0)
+                phaseTwo -= 1.0;
             }
     }
-    lfoPhase = phase;
+    lfoOnePhase = phase;
+    lfoTwoPhase = phaseTwo;
 }
 
 //==============================================================================
@@ -309,6 +353,12 @@ float MyTremoloAudioProcessor::lfoOne(float phase, int choice)
             return 0.5f + 0.5f * sinf(2.0 * M_PI * phase);
             break;
     }
+}
+
+//LFO two (modulating LFO one) waveform selection
+float MyTremoloAudioProcessor::lfoTwo(float phaseTwo)
+{
+    return 0.5f + 0.5f * sinf(2.0 * M_PI * phaseTwo);
 }
 
 //==============================================================================

@@ -60,14 +60,21 @@ private:
     //Variables
     juce::LinearSmoothedValue<float> depth { 0.0 };
     juce::LinearSmoothedValue<float> freq { 0.0 };
-    juce::LinearSmoothedValue<float> lfoPhase { 0.0 };
+    juce::LinearSmoothedValue<float> lfoOnePhase { 0.0 };
+    
+    juce::LinearSmoothedValue<float> depthTwo { 0.0 };
+    juce::LinearSmoothedValue<float> freqTwo { 0.0 };
+    juce::LinearSmoothedValue<float> lfoTwoPhase { 0.0 };
     
     //LFO one function for waveform types
     float lfoOne(float phase, int choice);
     
+    //LFO two function for waveform types
+    float lfoTwo(float phaseTwo);
+    
     int waveform  { 0 };
     int multiplier { 1 };
-    bool ringMod { false };
+//    bool ringMod { false };
     
     // for LFO phase update
     float inverseSampleRate;
