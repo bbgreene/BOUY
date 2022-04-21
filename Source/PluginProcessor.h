@@ -58,19 +58,19 @@ public:
 private:
     
     //Variables
-    
     juce::LinearSmoothedValue<float> depth { 0.0 };
     juce::LinearSmoothedValue<float> freq { 0.0 };
     juce::LinearSmoothedValue<float> lfoPhase { 0.0 };
-//    float depth { 0.0 };
-//    float freq { 0.0 };
-//    float lfoPhase;
     
-
-    float lfo(float phase, int choice);
-    float inverseSampleRate;
+    //LFO one function for waveform types
+    float lfoOne(float phase, int choice);
+    
     int waveform  { 0 };
-    int multiplier { 0 };
+    int multiplier { 1 };
+    bool ringMod { false };
+    
+    // for LFO phase update
+    float inverseSampleRate;
     
     //Parameters
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();

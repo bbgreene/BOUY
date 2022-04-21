@@ -40,7 +40,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout MyTremoloAudioProcessor::cre
 {
     std::vector<std::unique_ptr<juce::RangedAudioParameter>> params;
     
-    juce::StringArray waveformSelector = {"Sine", "Triangle", "Square", "Sloped Square"};
+    //LFO One waveform names
+    juce::StringArray waveformSelector = {"Sine", "Triangle", "Square", "Sloped Square", "Ring"};
     
     auto pDepth = std::make_unique<juce::AudioParameterFloat>("depth", "Depth", 0.0, 1.0, 0.5);
     auto pFreq = std::make_unique<juce::AudioParameterFloat>("freq", "Freq", juce::NormalisableRange<float>(0.0, 100.0, 0.01, 0.3), 5.0);
@@ -73,7 +74,6 @@ void MyTremoloAudioProcessor::parameterChanged(const juce::String &parameterID, 
     {
         multiplier = newValue;
     }
-    
 }
 //==============================================================================
 const juce::String MyTremoloAudioProcessor::getName() const
@@ -192,6 +192,7 @@ void MyTremoloAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
     
+    //LFO One parameters
     float myDepth = *treeState.getRawParameterValue("depth");
     depth.setTargetValue(myDepth);
     float myFreq = *treeState.getRawParameterValue("freq");
@@ -200,6 +201,7 @@ void MyTremoloAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     float currentDepth = depth.getNextValue();
     float currentFrequency = freq.getNextValue();
     
+    //Multiplier
     if(multiplier == 0)
     {
         currentFrequency *= 0.5; // this makes '0' half the freq of LFO - need to use a somehting else for this!
@@ -211,6 +213,7 @@ void MyTremoloAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     
     float phase = lfoPhase.getNextValue();
         
+    //Processing Tremolo
     for (int channel = 0; channel < totalNumInputChannels; ++channel)
     {
         auto* channelData = buffer.getWritePointer(channel);
@@ -220,8 +223,7 @@ void MyTremoloAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
             {
                 const float in = channelData[sample];
                 // Tremolo
-                float out = in * (1 - currentDepth + currentDepth * lfo(phase, waveform));
-
+                float out = in * (1 - currentDepth + currentDepth * lfoOne(phase, waveform));
                 channelData[sample] = out;
                 
                 // Update the carrier and LFO phases, keeping them in the range 0-1
@@ -264,7 +266,8 @@ void MyTremoloAudioProcessor::setStateInformation (const void* data, int sizeInB
     }
 }
 
-float MyTremoloAudioProcessor::lfo(float phase, int choice)
+//LFO one (main tremolo LFO) waveform selection
+float MyTremoloAudioProcessor::lfoOne(float phase, int choice)
 {
     switch (choice) {
         case 0:
@@ -297,9 +300,13 @@ float MyTremoloAudioProcessor::lfo(float phase, int choice)
                 return 0.0f;
             else
                 return 50.0f*(phase - 0.98f);
+        case 4:
+            // ring mod
+            return sinf(2.0 * M_PI * phase);
+            break;
             
         default:
-            return 0.5f + 0.5f*sinf(2.0 * M_PI * phase);
+            return 0.5f + 0.5f * sinf(2.0 * M_PI * phase);
             break;
     }
 }
