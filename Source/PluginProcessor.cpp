@@ -51,8 +51,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout MyTremoloAudioProcessor::cre
     auto pFreqOne = std::make_unique<juce::AudioParameterFloat>("freq one", "Freq One", juce::NormalisableRange<float>(0.0, 100.0, 0.01, 0.3), 0.0);
     auto pWaveform = std::make_unique<juce::AudioParameterChoice>("wave", "Wave", waveformSelector, 0);
     auto pMultiplier = std::make_unique<juce::AudioParameterInt>("multiplier", "Multiplier", 0, 4, 1);
-    auto pDepthTwo = std::make_unique<juce::AudioParameterFloat>("depth two", "Depth Two", 0.0, 500.0, 0.0);
-    auto pFreqTwo = std::make_unique<juce::AudioParameterFloat>("freq two", "Freq Two", juce::NormalisableRange<float>(0.0, 1.0, 0.01, 0.3), 0.0);
+    auto pDepthTwo = std::make_unique<juce::AudioParameterFloat>("depth two", "Depth Two", juce::NormalisableRange<float>(0.0, 500.0, 0.1, 0.3), 0.0);
+    auto pFreqTwo = std::make_unique<juce::AudioParameterFloat>("freq two", "Freq Two", juce::NormalisableRange<float>(0.0, 10.0, 0.01, 0.3), 0.1);
     
     params.push_back(std::move(pDepthOne));
     params.push_back(std::move(pFreqOne));
@@ -223,9 +223,7 @@ void MyTremoloAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     
     float currentDepthTwo = depthTwo.getNextValue();
     float currentFrequencyTwo = freqTwo.getNextValue();
-    
-    DBG(currentDepthTwo);
-        
+            
     //Multiplier
     if(multiplier == 0)
     {
