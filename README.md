@@ -9,11 +9,16 @@ An audio tremolo vst plugin made with JUCE.
  
 ** Parameters**
  
- Depth One: LFO one depth controlling the amount of amplitude modulation\
- Freq One: LFO one frequency controlling the rate of amplitude modulation (0-500Hz)\
+ LFO one (audio modulation/tremolo):
+ 
+ Depth One: the amount of amplitude modulation applied to an incoming signal by LFO one\
+ Freq One: the frequency of amplitude modulation applied to an incoming signal by LFO one (0-500 Hz)\
  Waveform: Choice of waveforms (sine, triangle, sloped square, ring mod) for LFO one\
- Multiplier: Multipliers LFO one's frequency by whole numbers\
- Depth Two: LFO two depth for frequency modulation of LFO one\
- Freq Two: LFO two frequency controlling the rate of frequency modulation (0-10Hz)
+ Multiplier: Multiplies LFO one's frequency by whole numbers\
+ 
+ LFO two (frequency modulation of LFO one):
+ 
+ Depth Two: Defines the frequency range that LFO one will deviate from its set frequency\
+ Freq Two: LFO two frequency controlling the rate of frequency modulation (0-10 Hz)
  
 Next steps: BPM sync for LFO one frequency, adjust multiplier values and create GUI
