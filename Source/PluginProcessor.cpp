@@ -45,14 +45,14 @@ juce::AudioProcessorValueTreeState::ParameterLayout MyTremoloAudioProcessor::cre
     std::vector<std::unique_ptr<juce::RangedAudioParameter>> params;
     
     //LFO One waveform names
-    juce::StringArray waveformSelector = {"Sine", "Triangle", "Square", "Sloped Square", "Ring"};
+    juce::StringArray waveformSelector = {"Sine", "Triangle", "Sloped Square", "Ring"};
     
     auto pDepthOne = std::make_unique<juce::AudioParameterFloat>("depth one", "Depth One", 0.0, 1.0, 0.5);
-    auto pFreqOne = std::make_unique<juce::AudioParameterFloat>("freq one", "Freq One", juce::NormalisableRange<float>(0.0, 100.0, 0.01, 0.3), 5.0);
+    auto pFreqOne = std::make_unique<juce::AudioParameterFloat>("freq one", "Freq One", juce::NormalisableRange<float>(0.0, 100.0, 0.01, 0.3), 0.0);
     auto pWaveform = std::make_unique<juce::AudioParameterChoice>("wave", "Wave", waveformSelector, 0);
     auto pMultiplier = std::make_unique<juce::AudioParameterInt>("multiplier", "Multiplier", 0, 4, 1);
-    auto pDepthTwo = std::make_unique<juce::AudioParameterFloat>("depth two", "Depth Two", 0.0, 500.0, 0.5);
-    auto pFreqTwo = std::make_unique<juce::AudioParameterFloat>("freq two", "Freq Two", juce::NormalisableRange<float>(0.0, 1.0, 0.01, 0.3), 5.0);
+    auto pDepthTwo = std::make_unique<juce::AudioParameterFloat>("depth two", "Depth Two", 0.0, 500.0, 0.0);
+    auto pFreqTwo = std::make_unique<juce::AudioParameterFloat>("freq two", "Freq Two", juce::NormalisableRange<float>(0.0, 1.0, 0.01, 0.3), 0.0);
     
     params.push_back(std::move(pDepthOne));
     params.push_back(std::move(pFreqOne));
@@ -66,14 +66,11 @@ juce::AudioProcessorValueTreeState::ParameterLayout MyTremoloAudioProcessor::cre
 
 void MyTremoloAudioProcessor::parameterChanged(const juce::String &parameterID, float newValue)
 {
-    if(parameterID == "depth one")
-    {
-        depthOne = newValue;
-    }
-    if(parameterID == "freq one")
-    {
-        freqOne = newValue;
-    }
+    depthOne.setTargetValue(treeState.getRawParameterValue("depth one")->load());
+    freqOne.setTargetValue(treeState.getRawParameterValue("freq one")->load());
+    depthTwo.setTargetValue(treeState.getRawParameterValue("depth two")->load());
+    freqTwo.setTargetValue(treeState.getRawParameterValue("freq two")->load());
+
     if(parameterID == "wave")
     {
         waveform = newValue;
@@ -81,14 +78,6 @@ void MyTremoloAudioProcessor::parameterChanged(const juce::String &parameterID, 
     if(parameterID == "multiplier")
     {
         multiplier = newValue;
-    }
-    if(parameterID == "depth two")
-    {
-        depthTwo = newValue;
-    }
-    if(parameterID == "freq two")
-    {
-        freqTwo = newValue;
     }
 }
 //==============================================================================
@@ -156,12 +145,17 @@ void MyTremoloAudioProcessor::changeProgramName (int index, const juce::String& 
 //==============================================================================
 void MyTremoloAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    depthOne.reset(sampleRate, 0.0005);
-    freqOne.reset(sampleRate, 0.0005);
-    depthTwo.reset(sampleRate, 0.0005);
-    freqTwo.reset(sampleRate, 0.0005);
-    lfoOnePhase.reset(sampleRate, 0.0005);
-    lfoTwoPhase.reset(sampleRate, 0.0005);
+    depthOne.reset(sampleRate, 0.001);
+    freqOne.reset(sampleRate, 0.001);
+    depthTwo.reset(sampleRate, 0.001);
+    freqTwo.reset(sampleRate, 0.001);
+    lfoOnePhase.reset(sampleRate, 0.001);
+    lfoTwoPhase.reset(sampleRate, 0.001);
+    
+    depthOne.setCurrentAndTargetValue(treeState.getRawParameterValue("depth one")->load());
+    freqOne.setCurrentAndTargetValue(treeState.getRawParameterValue("freq one")->load());
+    depthTwo.setCurrentAndTargetValue(treeState.getRawParameterValue("depth two")->load());
+    freqTwo.setCurrentAndTargetValue(treeState.getRawParameterValue("freq two")->load());
     
     waveform = treeState.getRawParameterValue("wave")->load();
     multiplier = *treeState.getRawParameterValue("multiplier");
@@ -229,6 +223,8 @@ void MyTremoloAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     
     float currentDepthTwo = depthTwo.getNextValue();
     float currentFrequencyTwo = freqTwo.getNextValue();
+    
+    DBG(currentDepthTwo);
         
     //Multiplier
     if(multiplier == 0)
@@ -324,13 +320,6 @@ float MyTremoloAudioProcessor::lfoOne(float phase, int choice)
                 return 2.0f*(phase-0.75f);
             break;
         case 2:
-            // Square
-            if(phase < 0.5f)
-            return 1.0f;
-            else
-            return 0.0f;
-            break;
-        case 3:
             // Square with sloped edges
             if(phase < 0.48f)
                 return 1.0f;
@@ -340,7 +329,7 @@ float MyTremoloAudioProcessor::lfoOne(float phase, int choice)
                 return 0.0f;
             else
                 return 50.0f*(phase - 0.98f);
-        case 4:
+        case 3:
             // ring mod
             return sinf(2.0 * M_PI * phase);
             break;

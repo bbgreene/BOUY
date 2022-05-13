@@ -74,7 +74,6 @@ private:
     
     int waveform  { 0 };
     int multiplier { 1 };
-//    bool ringMod { false };
     
     // for LFO phase update
     float inverseSampleRate;
