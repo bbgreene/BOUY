@@ -55,7 +55,7 @@ private:
     bbg_gui::bbg_dialLabel rateOneLabel { "Rate" };
     bbg_gui::bbg_dialLabel amountTwoLabel { "Amount" };
     bbg_gui::bbg_dialLabel rateTwoLabel { "Rate" };
-    bbg_gui::bbg_dialLabel multiplierLabel { "Multiplier" };
+    bbg_gui::bbg_dialLabel multiplierLabel { "Multiply" };
     
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
