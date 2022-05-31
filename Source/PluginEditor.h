@@ -37,7 +37,7 @@ private:
     bbg_gui::bbg_Dial rateOne { " Hz", 0.0, 100.0, 0.01, 0.0, 0.0 };
     bbg_gui::bbg_Dial amountTwo { " %", 0.0, 500.0, 0.01, 0.0, 0.0 };
     bbg_gui::bbg_Dial rateTwo { " Hz", 0.0, 10.0, 0.01, 0.0, 0.0 };
-    bbg_gui::bbg_Dial multiplier { " x", 0.0, 4.0, 1.0, 1.0, 0.0 };
+    bbg_gui::bbg_Dial multiplier { " x", 1.0, 5.0, 1.0, 1.0, 0.0 };
     bbg_gui::bbg_Menu waveform;
     
     //Attachments

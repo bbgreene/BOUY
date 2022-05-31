@@ -50,7 +50,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout MyTremoloAudioProcessor::cre
     auto pDepthOne = std::make_unique<juce::AudioParameterFloat>("depth one", "Depth One", 0.0, 1.0, 0.5);
     auto pFreqOne = std::make_unique<juce::AudioParameterFloat>("freq one", "Freq One", juce::NormalisableRange<float>(0.0, 100.0, 0.01, 0.3), 0.0);
     auto pWaveform = std::make_unique<juce::AudioParameterChoice>("wave", "Wave", waveformSelector, 0);
-    auto pMultiplier = std::make_unique<juce::AudioParameterInt>("multiplier", "Multiplier", 0, 4, 1);
+    auto pMultiplier = std::make_unique<juce::AudioParameterInt>("multiplier", "Multiplier", 1, 5, 1);
     auto pDepthTwo = std::make_unique<juce::AudioParameterFloat>("depth two", "Depth Two", juce::NormalisableRange<float>(0.0, 500.0, 0.1, 0.3), 0.0);
     auto pFreqTwo = std::make_unique<juce::AudioParameterFloat>("freq two", "Freq Two", juce::NormalisableRange<float>(0.0, 10.0, 0.01, 0.3), 0.1);
     
@@ -225,14 +225,8 @@ void MyTremoloAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     float currentFrequencyTwo = freqTwo.getNextValue();
             
     //Multiplier
-    if(multiplier == 0)
-    {
-        currentFrequencyOne *= 0.5; // this makes '0' half the freq of LFO - need to use a somehting else for this!
-    }
-    else
-    {
-        currentFrequencyOne *= multiplier;
-    }
+    currentFrequencyOne *= multiplier;
+    
     
     float phaseOne = lfoOnePhase.getNextValue();
     float phaseTwo = lfoTwoPhase.getNextValue();
