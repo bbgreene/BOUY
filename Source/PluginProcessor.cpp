@@ -277,8 +277,7 @@ bool MyTremoloAudioProcessor::hasEditor() const
 
 juce::AudioProcessorEditor* MyTremoloAudioProcessor::createEditor()
 {
-//    return new MyTremoloAudioProcessorEditor (*this);
-    return new juce::GenericAudioProcessorEditor (*this);
+    return new MyTremoloAudioProcessorEditor (*this);
 }
 
 //==============================================================================

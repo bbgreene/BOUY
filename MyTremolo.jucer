@@ -4,6 +4,21 @@
               addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" cppLanguageStandard="17">
   <MAINGROUP id="HtrFKp" name="MyTremolo">
     <GROUP id="{E0BA08D6-F911-8901-B669-A9241F24D2E6}" name="Source">
+      <GROUP id="{E036EA07-806B-4AD1-6FEA-E20901AF3D1A}" name="bbg_gui">
+        <FILE id="Z7oeSP" name="CustomColours.h" compile="0" resource="0" file="Source/bbg_gui/CustomColours.h"/>
+        <FILE id="YS9PdZ" name="Dial.cpp" compile="1" resource="0" file="Source/bbg_gui/Dial.cpp"/>
+        <FILE id="gRGL7C" name="Dial.h" compile="0" resource="0" file="Source/bbg_gui/Dial.h"/>
+        <FILE id="xL7vbH" name="Label.cpp" compile="1" resource="0" file="Source/bbg_gui/Label.cpp"/>
+        <FILE id="XGowfI" name="Label.h" compile="0" resource="0" file="Source/bbg_gui/Label.h"/>
+        <FILE id="RMYW4C" name="Menu.cpp" compile="1" resource="0" file="Source/bbg_gui/Menu.cpp"/>
+        <FILE id="BrszsX" name="Menu.h" compile="0" resource="0" file="Source/bbg_gui/Menu.h"/>
+        <FILE id="VnKb4v" name="PushButton.cpp" compile="1" resource="0" file="Source/bbg_gui/PushButton.cpp"/>
+        <FILE id="dBA32k" name="PushButton.h" compile="0" resource="0" file="Source/bbg_gui/PushButton.h"/>
+        <FILE id="Is37Q9" name="StyleSheet.cpp" compile="1" resource="0" file="Source/bbg_gui/StyleSheet.cpp"/>
+        <FILE id="La64tQ" name="StyleSheet.h" compile="0" resource="0" file="Source/bbg_gui/StyleSheet.h"/>
+        <FILE id="BTJis9" name="Toggle.cpp" compile="1" resource="0" file="Source/bbg_gui/Toggle.cpp"/>
+        <FILE id="V71kLq" name="Toggle.h" compile="0" resource="0" file="Source/bbg_gui/Toggle.h"/>
+      </GROUP>
       <FILE id="OKkhtf" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
       <FILE id="M7UxZp" name="PluginProcessor.h" compile="0" resource="0"
