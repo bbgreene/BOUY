@@ -42,10 +42,10 @@ MyTremoloAudioProcessorEditor::MyTremoloAudioProcessorEditor (MyTremoloAudioProc
     addAndMakeVisible(multiplier);
     
     waveformAttachement = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.treeState, "wave", waveform);
-    waveform.setText("Waveform");
+    waveform.setText("Sine");
     waveform.addItem("Sine", 1);
-    waveform.addItem("Triangle", 2);
-    waveform.addItem("Sloped Square", 3);
+    waveform.addItem("Tri", 2);
+    waveform.addItem("Square", 3);
     waveform.addItem("Ring", 4);
     addAndMakeVisible(waveform);
     
@@ -85,7 +85,7 @@ void MyTremoloAudioProcessorEditor::resized()
     auto multiDialSize = dialSize * 0.7;
 //    auto waveformHeight =
     
-    tube.setBounds(leftMargin, dialYGap, dialSize, dialSize);
+    tube.setBounds(leftMargin, dialYGap + 20, dialSize, dialSize);
     amountOne.setBounds(leftMargin, tube.getBottom() + dialYGap, dialSize, dialSize);
     amountTwo.setBounds(leftMargin, amountOne.getBottom() + dialYGap, dialSize, dialSize);
     rateOne.setBounds(amountOne.getRight(), tube.getBottom() + dialYGap, dialSize, dialSize);
