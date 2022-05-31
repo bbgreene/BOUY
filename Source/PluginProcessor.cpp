@@ -48,11 +48,11 @@ juce::AudioProcessorValueTreeState::ParameterLayout MyTremoloAudioProcessor::cre
     juce::StringArray waveformSelector = {"Sine", "Triangle", "Sloped Square", "Ring"};
     
     auto pDepthOne = std::make_unique<juce::AudioParameterFloat>("depth one", "Depth One", 0.0, 100.0, 0.0);
-    auto pFreqOne = std::make_unique<juce::AudioParameterFloat>("freq one", "Freq One", juce::NormalisableRange<float>(0.0, 100.0, 0.01, 0.3), 0.0);
+    auto pFreqOne = std::make_unique<juce::AudioParameterFloat>("freq one", "Freq One", juce::NormalisableRange<float>(0.01, 100.0, 0.01, 0.4), 0.0);
     auto pWaveform = std::make_unique<juce::AudioParameterChoice>("wave", "Wave", waveformSelector, 0);
     auto pMultiplier = std::make_unique<juce::AudioParameterInt>("multiplier", "Multiplier", 1, 5, 1);
     auto pDepthTwo = std::make_unique<juce::AudioParameterFloat>("depth two", "Depth Two", 0.0, 100.0, 0.0);
-    auto pFreqTwo = std::make_unique<juce::AudioParameterFloat>("freq two", "Freq Two", juce::NormalisableRange<float>(0.0, 10.0, 0.01, 0.3), 0.1);
+    auto pFreqTwo = std::make_unique<juce::AudioParameterFloat>("freq two", "Freq Two", juce::NormalisableRange<float>(0.01, 10.0, 0.01, 0.5), 0.1);
     
     params.push_back(std::move(pDepthOne));
     params.push_back(std::move(pFreqOne));
