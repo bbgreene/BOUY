@@ -22,6 +22,7 @@ MyTremoloAudioProcessor::MyTremoloAudioProcessor()
                        ), treeState(*this, nullptr, "PARAMETERS", createParameterLayout())
 #endif
 {
+    treeState.addParameterListener("tube", this);
     treeState.addParameterListener("depth one", this);
     treeState.addParameterListener("freq one", this);
     treeState.addParameterListener("wave", this);
@@ -32,6 +33,7 @@ MyTremoloAudioProcessor::MyTremoloAudioProcessor()
 
 MyTremoloAudioProcessor::~MyTremoloAudioProcessor()
 {
+    treeState.removeParameterListener("tube", this);
     treeState.removeParameterListener("depth one", this);
     treeState.removeParameterListener("freq one", this);
     treeState.removeParameterListener("wave", this);
@@ -47,6 +49,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout MyTremoloAudioProcessor::cre
     //LFO One waveform names
     juce::StringArray waveformSelector = {"Sine", "Triangle", "Sloped Square", "Ring"};
     
+    auto pTube = std::make_unique<juce::AudioParameterFloat>("tube", "Tube", 0.0, 24.0, 0.0);
     auto pDepthOne = std::make_unique<juce::AudioParameterFloat>("depth one", "Depth One", 0.0, 100.0, 0.0);
     auto pFreqOne = std::make_unique<juce::AudioParameterFloat>("freq one", "Freq One", juce::NormalisableRange<float>(0.01, 100.0, 0.01, 0.4), 0.01);
     auto pWaveform = std::make_unique<juce::AudioParameterChoice>("wave", "Wave", waveformSelector, 0);
@@ -54,6 +57,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout MyTremoloAudioProcessor::cre
     auto pDepthTwo = std::make_unique<juce::AudioParameterFloat>("depth two", "Depth Two", juce::NormalisableRange<float>(0.00, 100.0, 0.01, 0.3), 0.00);
     auto pFreqTwo = std::make_unique<juce::AudioParameterFloat>("freq two", "Freq Two", juce::NormalisableRange<float>(0.11, 1.0, 0.1, 1.0), 0.1);
     
+    params.push_back(std::move(pTube));
     params.push_back(std::move(pDepthOne));
     params.push_back(std::move(pFreqOne));
     params.push_back(std::move(pWaveform));
@@ -78,6 +82,11 @@ void MyTremoloAudioProcessor::parameterChanged(const juce::String &parameterID, 
     if(parameterID == "multiplier")
     {
         multiplier = newValue;
+    }
+    if (parameterID == "tube")
+    {
+        dBInput = newValue;
+        rawInput = juce::Decibels::decibelsToGain(dBInput);
     }
 }
 //==============================================================================
@@ -152,6 +161,7 @@ void MyTremoloAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBl
     lfoOnePhase.reset(sampleRate, 0.001);
     lfoTwoPhase.reset(sampleRate, 0.001);
     
+    rawInput = juce::Decibels::decibelsToGain(static_cast<float>(*treeState.getRawParameterValue("tube")));
     depthOne.setCurrentAndTargetValue(treeState.getRawParameterValue("depth one")->load());
     freqOne.setCurrentAndTargetValue(treeState.getRawParameterValue("freq one")->load());
     depthTwo.setCurrentAndTargetValue(treeState.getRawParameterValue("depth two")->load());
@@ -336,6 +346,15 @@ float MyTremoloAudioProcessor::lfoOne(float phase, int choice)
 float MyTremoloAudioProcessor::lfoTwo(float phaseTwo)
 {
     return 0.5f + 0.5f * sinf(2.0 * M_PI * phaseTwo);
+}
+
+// softclip algorithim (rounded)
+float MyTremoloAudioProcessor::softClipData(float samples)
+{
+    samples *= rawInput * 6.0;
+    DBG(rawInput);
+    
+    return piDivisor * std::atan(samples);
 }
 
 //==============================================================================

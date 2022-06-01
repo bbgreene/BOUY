@@ -32,7 +32,7 @@ public:
 private:
     
     //UI dials and Buttons
-    bbg_gui::bbg_Dial tube { " %", 0.0, 100.0, 0.01, 0.0, 0.0 };
+    bbg_gui::bbg_Dial tube { " %", 0.0, 24.0, 0.01, 0.0, 0.0 };
     bbg_gui::bbg_Dial amountOne { " %", 0.0, 100.0, 0.01, 0.0, 0.0 };
     bbg_gui::bbg_Dial rateOne { " Hz", 0.01, 100.0, 0.01, 0.01, 0.0 };
     bbg_gui::bbg_Dial amountTwo { " %", 0.0, 100.0, 0.01, 0.0, 0.0 };
