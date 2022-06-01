@@ -154,6 +154,11 @@ void MyTremoloAudioProcessor::changeProgramName (int index, const juce::String& 
 //==============================================================================
 void MyTremoloAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
+    juce::dsp::ProcessSpec spec;
+    spec.sampleRate = sampleRate;
+    spec.maximumBlockSize = samplesPerBlock;
+    spec.numChannels = getTotalNumInputChannels();
+    
     depthOne.reset(sampleRate, 0.001);
     freqOne.reset(sampleRate, 0.001);
     depthTwo.reset(sampleRate, 0.001);
@@ -222,26 +227,26 @@ void MyTremoloAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     depthOne.setTargetValue(myDepthOne);
     float myFreqOne = *treeState.getRawParameterValue("freq one");
     freqOne.setTargetValue(myFreqOne);
-    
+
     float currentDepthOne = depthOne.getNextValue();
     float currentFrequencyOne = freqOne.getNextValue();
-    
+
     //LFO Two parameters
     float myDepthTwoPercentage = *treeState.getRawParameterValue("depth two"); //getting 0 - 100 from dial
     float myDepthTwo = juce::jmap(myDepthTwoPercentage, 0.0f, 100.0f, 0.0f, 40.0f); // converting to 0 - 40
     depthTwo.setTargetValue(myDepthTwo);
     float myFreqTwo = *treeState.getRawParameterValue("freq two");
     freqTwo.setTargetValue(myFreqTwo);
-    
+
     float currentDepthTwo = depthTwo.getNextValue();
     float currentFrequencyTwo = freqTwo.getNextValue();
-            
+
     //Multiplier
     currentFrequencyOne *= multiplier;
-    
+
     float phaseOne = lfoOnePhase.getNextValue();
     float phaseTwo = lfoTwoPhase.getNextValue();
-    
+
     //Processing Tremolo
     for (int channel = 0; channel < totalNumInputChannels; ++channel)
     {
@@ -251,6 +256,7 @@ void MyTremoloAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
 
         for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
             {
+                channelData[sample] = softClipData(channelData[sample]);
                 const float in = channelData[sample];
                 // Tremolo
                 float out = in * (1 - currentDepthOne + currentDepthOne * lfoOne(phaseOne, waveform));
@@ -263,7 +269,7 @@ void MyTremoloAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
                 phaseOne += (currentFrequencyOne + lfoTwoOut) * inverseSampleRate;
                 if (phaseOne >= 1.0)
                 phaseOne -= 1.0;
-                
+
                 // Update the carrier and LFO Two phases, keeping them in the range 0-1
                 phaseTwo += currentFrequencyTwo * inverseSampleRate;
                 if (phaseTwo >= 1.0)
@@ -272,6 +278,7 @@ void MyTremoloAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     }
     lfoOnePhase = phaseOne;
     lfoTwoPhase = phaseTwo;
+
 }
 
 //==============================================================================
@@ -352,8 +359,6 @@ float MyTremoloAudioProcessor::lfoTwo(float phaseTwo)
 float MyTremoloAudioProcessor::softClipData(float samples)
 {
     samples *= rawInput * 6.0;
-    DBG(rawInput);
-    
     return piDivisor * std::atan(samples);
 }
 
