@@ -256,6 +256,7 @@ void MyTremoloAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
 
         for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
             {
+                //Distortion - add a bool from a push button
                 channelData[sample] = softClipData(channelData[sample]);
                 const float in = channelData[sample];
                 // Tremolo
