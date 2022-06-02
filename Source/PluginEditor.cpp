@@ -60,30 +60,33 @@ MyTremoloAudioProcessorEditor::MyTremoloAudioProcessorEditor (MyTremoloAudioProc
     rateTwoLabel.attachToComponent(&rateTwo, false);
     multiplierLabel.attachToComponent(&multiplier, false);
     
-    //borders
-    addAndMakeVisible(lfoOneBorder);
-    lfoOneBorder.setTextLabelPosition(juce::Justification::centred);
-    lfoOneBorder.setColour(juce::GroupComponent::outlineColourId, juce::Colours::lightgrey);
-    lfoOneBorder.setText("LFO 1");
-    addAndMakeVisible(lfoTwoBorder);
-    lfoTwoBorder.setTextLabelPosition(juce::Justification::centred);
-    lfoTwoBorder.setColour(juce::GroupComponent::outlineColourId, juce::Colours::lightgrey);
-    lfoTwoBorder.setText("LFO 2 > LFO 1 rate");
+    lfoOneLabel.setFont(juce::Font (15.0f, juce::Font::plain));
+    lfoOneLabel.setJustificationType(juce::Justification::centred);
+    lfoOneLabel.setColour (juce::Label::textColourId, CustomColours::creamWhite);
+    addAndMakeVisible(lfoOneLabel);
+    lfoTwoLabel.setFont(juce::Font (15.0f, juce::Font::plain));
+    lfoTwoLabel.setJustificationType(juce::Justification::centred);
+    lfoTwoLabel.setColour (juce::Label::textColourId, CustomColours::creamWhite);
+    addAndMakeVisible(lfoTwoLabel);
     
     //tubeOnOff state changing tube dial and rotary fill colour
-    tube.setColour(juce::Slider::thumbColourId, juce::Colours::aliceblue.darker()); // using this for when plugin is loaded
-    tube.setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::aliceblue.darker()); // using this for when plugin is loaded
+    tube.setColour(juce::Slider::thumbColourId, juce::Colours::aliceblue.darker(0.2)); // using this for when plugin is loaded
+    tube.setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::aliceblue.darker(0.2)); // using this for when plugin is loaded
+    tubeOnOff.setButtonText("Off");
     tubeOnOff.onClick = [this]()
     {
         if(static_cast<int>(tubeOnOff.getToggleState()))
         {
             tube.setColour(juce::Slider::thumbColourId, juce::Colours::aliceblue);
             tube.setColour(juce::Slider::rotarySliderFillColourId, CustomColours::creamWhite);
+            tubeOnOff.setColour(juce::TextButton::ColourIds::textColourOnId, juce::Colours::aliceblue);
+            tubeOnOff.setButtonText("On");
         }
         else
         {
-            tube.setColour(juce::Slider::thumbColourId, juce::Colours::aliceblue.darker());
-            tube.setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::aliceblue.darker());
+            tube.setColour(juce::Slider::thumbColourId, juce::Colours::aliceblue.darker(0.2));
+            tube.setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::aliceblue.darker(0.2));
+            tubeOnOff.setButtonText("Off");
         }
     };
     
@@ -105,8 +108,19 @@ MyTremoloAudioProcessorEditor::~MyTremoloAudioProcessorEditor()
 void MyTremoloAudioProcessorEditor::paint (juce::Graphics& g)
 {
     juce::Rectangle<int> background = getLocalBounds();
-    g.setGradientFill(juce::ColourGradient::vertical(juce::Colours::lightseagreen.brighter(0.5), getHeight() - getHeight(), juce::Colours::darkorange.brighter(0.5), getHeight()));
+    g.setGradientFill(juce::ColourGradient::vertical(juce::Colours::gold, getHeight() - getHeight(), juce::Colours::orange.brighter(), getHeight()));
     g.fillRect(background);
+    
+    //Line
+    auto lineX = (getWidth() / 2) + ((getHeight() / 4) / 2);
+    auto lineYone = getHeight() * 0.6465;
+    auto lineYtwo = getHeight() * 0.7112;
+    g.setColour (CustomColours::blackGrey.brighter(0.8));
+    
+    juce::Line<float> line (juce::Point<float> (lineX, lineYone),
+                            juce::Point<float> (lineX, lineYtwo));
+
+     g.drawLine (line, 1.0f);
 }
 
 void MyTremoloAudioProcessorEditor::resized()
@@ -131,9 +145,11 @@ void MyTremoloAudioProcessorEditor::resized()
     auto tubeOnXGap = (dialSize - tubeOnWidth) / 2;
     auto tubeOnYGap = getHeight() * 0.05;
     
-    auto border1YGap = getHeight() * 0.0242;
-    auto border2YGap = getHeight() * 0.0146;
-    auto borderSizeExtra = getWidth() * 0.07330;
+    auto lfoLabelWidth = getWidth() * 0.3334;
+    auto lfoLabelHeight = getHeight() * 0.05;
+    auto lfoLabelXPos = (getWidth() / 2) - (lfoLabelWidth / 2);
+    auto lfoOneYPos = topMargain + (dialSize * 2);
+    auto lfoTwoYPos = topMargain + (dialSize * 3) + dialYGap;
     
     tube.setBounds(leftMargin, topMargain, dialSize, dialSize);
     tubeOnOff.setBounds(leftMargin + tubeOnXGap, tube.getBottom() - tubeOnYGap, tubeOnWidth, tubeOnHeight);
@@ -144,7 +160,7 @@ void MyTremoloAudioProcessorEditor::resized()
     rateOne.setBounds(amountOne.getRight(), tube.getBottom() + dialYGap + extraYDialGap, dialSize, dialSize);
     rateTwo.setBounds(amountTwo.getRight(), rateOne.getBottom() + dialYGap, dialSize, dialSize);
     
-    lfoOneBorder.setBounds(leftMargin, tubeOnOff.getBottom() + border1YGap, getWidth() - (leftMargin * 2), dialSize + borderSizeExtra);
-    lfoTwoBorder.setBounds(leftMargin, lfoOneBorder.getBottom() + border2YGap, getWidth() - (leftMargin * 2), dialSize + borderSizeExtra);
+    lfoOneLabel.setBounds(lfoLabelXPos, lfoOneYPos, lfoLabelWidth, lfoLabelHeight);
+    lfoTwoLabel.setBounds(lfoLabelXPos, lfoTwoYPos, lfoLabelWidth, lfoLabelHeight);
     
 }

@@ -58,10 +58,8 @@ private:
     bbg_gui::bbg_dialLabel amountTwoLabel { "Amount" };
     bbg_gui::bbg_dialLabel rateTwoLabel { "Rate" };
     bbg_gui::bbg_dialLabel multiplierLabel { "Multiply" };
-    
-    //Borders
-    juce::GroupComponent lfoOneBorder;
-    juce::GroupComponent lfoTwoBorder;
+    bbg_gui::bbg_dialLabel lfoOneLabel { "LFO 1" };
+    bbg_gui::bbg_dialLabel lfoTwoLabel { "LFO 2" };
     
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
