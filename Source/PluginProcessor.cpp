@@ -78,6 +78,7 @@ void MyTremoloAudioProcessor::parameterChanged(const juce::String &parameterID, 
     freqOne.setTargetValue(treeState.getRawParameterValue("lfo one rate")->load());
     depthTwo.setTargetValue(treeState.getRawParameterValue("lfo two depth")->load());
     freqTwo.setTargetValue(treeState.getRawParameterValue("lfo two rate")->load());
+    
 
     if(parameterID == "wave")
     {
@@ -178,6 +179,7 @@ void MyTremoloAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBl
     tubeInPercentage = treeState.getRawParameterValue("tube")->load();
     tubeInGain = juce::jmap(tubeInPercentage, 0.0f, 100.0f, 0.0f, 24.0f); //converting tube percentage to decibels
     rawInput = juce::Decibels::decibelsToGain(tubeInGain);
+    tubeOnOff = treeState.getRawParameterValue("tubeOnOff")->load();
     depthOne.setCurrentAndTargetValue(treeState.getRawParameterValue("lfo one depth")->load());
     freqOne.setCurrentAndTargetValue(treeState.getRawParameterValue("lfo one rate")->load());
     depthTwo.setCurrentAndTargetValue(treeState.getRawParameterValue("lfo two depth")->load());

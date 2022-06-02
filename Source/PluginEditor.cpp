@@ -60,7 +60,22 @@ MyTremoloAudioProcessorEditor::MyTremoloAudioProcessorEditor (MyTremoloAudioProc
     rateTwoLabel.attachToComponent(&rateTwo, false);
     multiplierLabel.attachToComponent(&multiplier, false);
     
-    
+    //tubeOnOff state changing tube dial and rotary fill colour
+    tube.setColour(juce::Slider::thumbColourId, juce::Colours::aliceblue.darker());
+    tube.setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::aliceblue.darker());
+    tubeOnOff.onClick = [this]()
+    {
+        if(static_cast<int>(tubeOnOff.getToggleState()))
+        {
+            tube.setColour(juce::Slider::thumbColourId, juce::Colours::aliceblue);
+            tube.setColour(juce::Slider::rotarySliderFillColourId, CustomColours::creamWhite);
+        }
+        else
+        {
+            tube.setColour(juce::Slider::thumbColourId, juce::Colours::aliceblue.darker());
+            tube.setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::aliceblue.darker());
+        }
+    };
     
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
