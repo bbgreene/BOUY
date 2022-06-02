@@ -74,16 +74,18 @@ private:
     
     int waveform  { 0 };
     int multiplier { 1 };
+    bool tubeOnOff { false };
     
     // for LFO phase update
     float inverseSampleRate;
     
     //Tube distortion variables
-    float dBInput { 0.0 };
+    float tubeInPercentage { 0.0 };
+    float tubeInGain { 0.0 };
     float rawInput { 1.0 };
     
     // distortion functions
-    float softClipData(float samples);
+    float tubeData(float samples);
     
     // softclip divisor. Creating this constexpr is more efficient than doing 2/pi for every sample in the audio block, because calculated at initialisation
     static constexpr float piDivisor = 2.0 / juce::MathConstants<float>::pi;

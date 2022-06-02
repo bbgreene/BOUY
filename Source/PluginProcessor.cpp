@@ -23,23 +23,25 @@ MyTremoloAudioProcessor::MyTremoloAudioProcessor()
 #endif
 {
     treeState.addParameterListener("tube", this);
-    treeState.addParameterListener("depth one", this);
-    treeState.addParameterListener("freq one", this);
+    treeState.addParameterListener("tubeOnOff", this);
+    treeState.addParameterListener("multiply", this);
     treeState.addParameterListener("wave", this);
-    treeState.addParameterListener("multiplier", this);
-    treeState.addParameterListener("depth two", this);
-    treeState.addParameterListener("freq two", this);
+    treeState.addParameterListener("lfo one depth", this);
+    treeState.addParameterListener("lfo one rate", this);
+    treeState.addParameterListener("lfo two depth", this);
+    treeState.addParameterListener("lfo two rate", this);
 }
 
 MyTremoloAudioProcessor::~MyTremoloAudioProcessor()
 {
     treeState.removeParameterListener("tube", this);
-    treeState.removeParameterListener("depth one", this);
-    treeState.removeParameterListener("freq one", this);
+    treeState.removeParameterListener("tubeOnOff", this);
+    treeState.removeParameterListener("multiply", this);
     treeState.removeParameterListener("wave", this);
-    treeState.removeParameterListener("multiplier", this);
-    treeState.removeParameterListener("depth two", this);
-    treeState.removeParameterListener("freq two", this);
+    treeState.removeParameterListener("lfo one depth", this);
+    treeState.removeParameterListener("lfo one rate", this);
+    treeState.removeParameterListener("lfo two depth", this);
+    treeState.removeParameterListener("lfo two rate", this);
 }
 
 juce::AudioProcessorValueTreeState::ParameterLayout MyTremoloAudioProcessor::createParameterLayout()
@@ -49,19 +51,21 @@ juce::AudioProcessorValueTreeState::ParameterLayout MyTremoloAudioProcessor::cre
     //LFO One waveform names
     juce::StringArray waveformSelector = {"Sine", "Triangle", "Sloped Square", "Ring"};
     
-    auto pTube = std::make_unique<juce::AudioParameterFloat>("tube", "Tube", 0.0, 24.0, 0.0);
-    auto pDepthOne = std::make_unique<juce::AudioParameterFloat>("depth one", "Depth One", 0.0, 100.0, 0.0);
-    auto pFreqOne = std::make_unique<juce::AudioParameterFloat>("freq one", "Freq One", juce::NormalisableRange<float>(0.01, 100.0, 0.01, 0.4), 0.01);
+    auto pTube = std::make_unique<juce::AudioParameterFloat>("tube", "Tube", juce::NormalisableRange<float>(0.00, 100.0, 0.01, 0.3), 0.0);
+    auto pTubeOnOff = std::make_unique<juce::AudioParameterBool>("tubeOnOff", "TubeOnOff", 0);
+    auto pMultiplier = std::make_unique<juce::AudioParameterInt>("multiply", "Multiply", 1, 5, 1);
     auto pWaveform = std::make_unique<juce::AudioParameterChoice>("wave", "Wave", waveformSelector, 0);
-    auto pMultiplier = std::make_unique<juce::AudioParameterInt>("multiplier", "Multiplier", 1, 5, 1);
-    auto pDepthTwo = std::make_unique<juce::AudioParameterFloat>("depth two", "Depth Two", juce::NormalisableRange<float>(0.00, 100.0, 0.01, 0.3), 0.00);
-    auto pFreqTwo = std::make_unique<juce::AudioParameterFloat>("freq two", "Freq Two", juce::NormalisableRange<float>(0.11, 1.0, 0.1, 1.0), 0.1);
+    auto pDepthOne = std::make_unique<juce::AudioParameterFloat>("lfo one depth", "LFO 1 Depth", 0.0, 100.0, 0.0);
+    auto pFreqOne = std::make_unique<juce::AudioParameterFloat>("lfo one rate", "LFO 1 Rate", juce::NormalisableRange<float>(0.01, 100.0, 0.01, 0.4), 0.01);
+    auto pDepthTwo = std::make_unique<juce::AudioParameterFloat>("lfo two depth", "LFO 2 Depth", juce::NormalisableRange<float>(0.00, 100.0, 0.01, 0.3), 0.00);
+    auto pFreqTwo = std::make_unique<juce::AudioParameterFloat>("lfo two rate", "LFO 2 Rate", juce::NormalisableRange<float>(0.11, 1.0, 0.1, 1.0), 0.1);
     
     params.push_back(std::move(pTube));
+    params.push_back(std::move(pTubeOnOff));
+    params.push_back(std::move(pMultiplier));
+    params.push_back(std::move(pWaveform));
     params.push_back(std::move(pDepthOne));
     params.push_back(std::move(pFreqOne));
-    params.push_back(std::move(pWaveform));
-    params.push_back(std::move(pMultiplier));
     params.push_back(std::move(pDepthTwo));
     params.push_back(std::move(pFreqTwo));
     
@@ -70,23 +74,28 @@ juce::AudioProcessorValueTreeState::ParameterLayout MyTremoloAudioProcessor::cre
 
 void MyTremoloAudioProcessor::parameterChanged(const juce::String &parameterID, float newValue)
 {
-    depthOne.setTargetValue(treeState.getRawParameterValue("depth one")->load());
-    freqOne.setTargetValue(treeState.getRawParameterValue("freq one")->load());
-    depthTwo.setTargetValue(treeState.getRawParameterValue("depth two")->load());
-    freqTwo.setTargetValue(treeState.getRawParameterValue("freq two")->load());
+    depthOne.setTargetValue(treeState.getRawParameterValue("lfo one depth")->load());
+    freqOne.setTargetValue(treeState.getRawParameterValue("lfo one rate")->load());
+    depthTwo.setTargetValue(treeState.getRawParameterValue("lfo two depth")->load());
+    freqTwo.setTargetValue(treeState.getRawParameterValue("lfo two rate")->load());
 
     if(parameterID == "wave")
     {
         waveform = newValue;
     }
-    if(parameterID == "multiplier")
+    if(parameterID == "multiply")
     {
         multiplier = newValue;
     }
     if (parameterID == "tube")
     {
-        dBInput = newValue;
-        rawInput = juce::Decibels::decibelsToGain(dBInput);
+        tubeInPercentage = newValue;
+        tubeInGain = juce::jmap(tubeInPercentage, 0.0f, 100.0f, 0.0f, 24.0f); //converting tube percentage to decibels
+        rawInput = juce::Decibels::decibelsToGain(tubeInGain);
+    }
+    if(parameterID == "tubeOnOff")
+    {
+        tubeOnOff = newValue;
     }
 }
 //==============================================================================
@@ -166,14 +175,16 @@ void MyTremoloAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBl
     lfoOnePhase.reset(sampleRate, 0.001);
     lfoTwoPhase.reset(sampleRate, 0.001);
     
-    rawInput = juce::Decibels::decibelsToGain(static_cast<float>(*treeState.getRawParameterValue("tube")));
-    depthOne.setCurrentAndTargetValue(treeState.getRawParameterValue("depth one")->load());
-    freqOne.setCurrentAndTargetValue(treeState.getRawParameterValue("freq one")->load());
-    depthTwo.setCurrentAndTargetValue(treeState.getRawParameterValue("depth two")->load());
-    freqTwo.setCurrentAndTargetValue(treeState.getRawParameterValue("freq two")->load());
+    tubeInPercentage = treeState.getRawParameterValue("tube")->load();
+    tubeInGain = juce::jmap(tubeInPercentage, 0.0f, 100.0f, 0.0f, 24.0f); //converting tube percentage to decibels
+    rawInput = juce::Decibels::decibelsToGain(tubeInGain);
+    depthOne.setCurrentAndTargetValue(treeState.getRawParameterValue("lfo one depth")->load());
+    freqOne.setCurrentAndTargetValue(treeState.getRawParameterValue("lfo one rate")->load());
+    depthTwo.setCurrentAndTargetValue(treeState.getRawParameterValue("lfo two depth")->load());
+    freqTwo.setCurrentAndTargetValue(treeState.getRawParameterValue("lfo two rate")->load());
     
     waveform = treeState.getRawParameterValue("wave")->load();
-    multiplier = *treeState.getRawParameterValue("multiplier");
+    multiplier = *treeState.getRawParameterValue("multiply");
         
     lfoOnePhase = 0.0;
     lfoTwoPhase = 0.0;
@@ -222,20 +233,20 @@ void MyTremoloAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
         buffer.clear (i, 0, buffer.getNumSamples());
     
     //LFO One parameters
-    float myDepthOnePercentage = *treeState.getRawParameterValue("depth one"); //getting 0 - 100 from dial
+    float myDepthOnePercentage = *treeState.getRawParameterValue("lfo one depth"); //getting 0 - 100 from dial
     float myDepthOne = juce::jmap(myDepthOnePercentage, 0.0f, 100.0f, 0.0f, 1.0f); // converting to 0 - 1
     depthOne.setTargetValue(myDepthOne);
-    float myFreqOne = *treeState.getRawParameterValue("freq one");
+    float myFreqOne = *treeState.getRawParameterValue("lfo one rate");
     freqOne.setTargetValue(myFreqOne);
 
     float currentDepthOne = depthOne.getNextValue();
     float currentFrequencyOne = freqOne.getNextValue();
 
     //LFO Two parameters
-    float myDepthTwoPercentage = *treeState.getRawParameterValue("depth two"); //getting 0 - 100 from dial
+    float myDepthTwoPercentage = *treeState.getRawParameterValue("lfo two depth"); //getting 0 - 100 from dial
     float myDepthTwo = juce::jmap(myDepthTwoPercentage, 0.0f, 100.0f, 0.0f, 40.0f); // converting to 0 - 40
     depthTwo.setTargetValue(myDepthTwo);
-    float myFreqTwo = *treeState.getRawParameterValue("freq two");
+    float myFreqTwo = *treeState.getRawParameterValue("lfo two rate");
     freqTwo.setTargetValue(myFreqTwo);
 
     float currentDepthTwo = depthTwo.getNextValue();
@@ -257,7 +268,8 @@ void MyTremoloAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
         for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
             {
                 //Distortion - add a bool from a push button
-                channelData[sample] = softClipData(channelData[sample]);
+                channelData[sample] = tubeData(channelData[sample]);
+                
                 const float in = channelData[sample];
                 // Tremolo
                 float out = in * (1 - currentDepthOne + currentDepthOne * lfoOne(phaseOne, waveform));
@@ -357,10 +369,25 @@ float MyTremoloAudioProcessor::lfoTwo(float phaseTwo)
 }
 
 // softclip algorithim (rounded)
-float MyTremoloAudioProcessor::softClipData(float samples)
+float MyTremoloAudioProcessor::tubeData(float samples)
 {
-    samples *= rawInput * 6.0;
-    return piDivisor * std::atan(samples);
+    if(tubeOnOff)
+    {
+        samples *= rawInput * 1.6;
+        
+        if (samples < 0.0)
+        {
+            samples = piDivisor * std::atan(samples);
+        }
+        else if (std::abs(samples) > 1.0)
+        {
+            // if true then this will output 1 (or -1)
+            samples *= 1.0 / std::abs(samples);
+        }
+        samples = piDivisor * std::atan(samples);
+    }
+//    samples = piDivisor * std::atan(samples);
+    return samples;
 }
 
 //==============================================================================

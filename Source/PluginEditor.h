@@ -32,13 +32,14 @@ public:
 private:
     
     //UI dials and Buttons
-    bbg_gui::bbg_Dial tube { " %", 0.0, 24.0, 0.01, 0.0, 0.0 };
+    bbg_gui::bbg_Dial tube { " %", 0.0, 100.0, 0.01, 0.0, 0.0 };
     bbg_gui::bbg_Dial amountOne { " %", 0.0, 100.0, 0.01, 0.0, 0.0 };
     bbg_gui::bbg_Dial rateOne { " Hz", 0.01, 100.0, 0.01, 0.01, 0.0 };
     bbg_gui::bbg_Dial amountTwo { " %", 0.0, 100.0, 0.01, 0.0, 0.0 };
     bbg_gui::bbg_Dial rateTwo { " Hz", 0.1, 1.0, 0.1, 0.0, 0.0 };
     bbg_gui::bbg_Dial multiplier { " x", 1.0, 5.0, 1.0, 1.0, 0.0 };
     bbg_gui::bbg_Menu waveform;
+    bbg_gui::bbg_PushButton tubeOnOff { "On" };
     
     //Attachments
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> tubeAttachement;
@@ -48,6 +49,7 @@ private:
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> rateTwoAttachement;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> multiplierAttachement;
     std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> waveformAttachement;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> tubeOnOffAttachement;
     
     //Labels
     bbg_gui::bbg_dialLabel tubeLabel { "Tube" };
