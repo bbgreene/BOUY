@@ -86,13 +86,14 @@ void MyTremoloAudioProcessorEditor::resized()
     auto dialYGap = getHeight() / 18.18;
     auto leftMargin = (getWidth() - (dialSize * 2)) / 2;
     
-    auto multiDialSize = dialSize * 0.6;
+    auto multiDialSize = dialSize * 0.8;
     auto multiXGap = (dialSize - multiDialSize) / 2;
-    auto mutliYGap = getHeight() * 0.1332;
+    auto mutliYGap = getHeight() * 0.135;
     
     auto waveformWidth = dialSize * 0.6;
-    auto waveformHeight = dialSize * 0.2;
+    auto waveformHeight = dialSize * 0.19;
     auto waveformXGap = (dialSize - waveformWidth) / 2;
+    auto waveformYGap = getHeight() / 125;
     
     auto tubeOnWidth = dialSize * 0.25;
     auto tubeOnHeight = dialSize * 0.15;
@@ -102,7 +103,7 @@ void MyTremoloAudioProcessorEditor::resized()
     tube.setBounds(leftMargin, topMargain, dialSize, dialSize);
     tubeOnOff.setBounds(leftMargin + tubeOnXGap, tube.getBottom() - tubeOnYGap, tubeOnWidth, tubeOnHeight);
     multiplier.setBounds(tube.getRight() + multiXGap, mutliYGap, multiDialSize, multiDialSize);
-    waveform.setBounds(tube.getRight() + waveformXGap, multiplier.getBottom(), waveformWidth, waveformHeight);
+    waveform.setBounds(tube.getRight() + waveformXGap, multiplier.getBottom() - waveformYGap, waveformWidth, waveformHeight);
     amountOne.setBounds(leftMargin, tube.getBottom() + dialYGap, dialSize, dialSize);
     amountTwo.setBounds(leftMargin, amountOne.getBottom() + dialYGap, dialSize, dialSize);
     rateOne.setBounds(amountOne.getRight(), tube.getBottom() + dialYGap, dialSize, dialSize);
