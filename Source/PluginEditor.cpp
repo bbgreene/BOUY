@@ -21,23 +21,26 @@ MyTremoloAudioProcessorEditor::MyTremoloAudioProcessorEditor (MyTremoloAudioProc
     tube.setDialStyle(bbg_gui::bbg_Dial::DialStyle::kDialDotModernStyle);
     addAndMakeVisible(tube);
     
-    amountOneAttachement = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.treeState, "depth one", amountOne);
+    tubeOnOffAttachement = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.treeState, "tubeOnOff", tubeOnOff);
+    addAndMakeVisible(tubeOnOff);
+    
+    amountOneAttachement = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.treeState, "lfo one depth", amountOne);
     amountOne.setDialStyle(bbg_gui::bbg_Dial::DialStyle::kDialDotModernStyle);
     addAndMakeVisible(amountOne);
     
-    rateOneAttachement = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.treeState, "freq one", rateOne);
+    rateOneAttachement = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.treeState, "lfo one rate", rateOne);
     rateOne.setDialStyle(bbg_gui::bbg_Dial::DialStyle::kDialDotModernStyle);
     addAndMakeVisible(rateOne);
     
-    amountTwoAttachement = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.treeState, "depth two", amountTwo);
+    amountTwoAttachement = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.treeState, "lfo two depth", amountTwo);
     amountTwo.setDialStyle(bbg_gui::bbg_Dial::DialStyle::kDialDotModernStyle);
     addAndMakeVisible(amountTwo);
     
-    rateTwoAttachement = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.treeState, "freq two", rateTwo);
+    rateTwoAttachement = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.treeState, "lfo two rate", rateTwo);
     rateTwo.setDialStyle(bbg_gui::bbg_Dial::DialStyle::kDialDotModernStyle);
     addAndMakeVisible(rateTwo);
     
-    multiplierAttachement = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.treeState, "multiplier", multiplier);
+    multiplierAttachement = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.treeState, "multiply", multiplier);
     multiplier.setDialStyle(bbg_gui::bbg_Dial::DialStyle::kDialDotModernStyle);
     addAndMakeVisible(multiplier);
     
@@ -88,14 +91,21 @@ void MyTremoloAudioProcessorEditor::resized()
     auto mutliYGap = getHeight() * 0.1332;
     
     auto waveformWidth = dialSize * 0.6;
-    auto waveformHeight = dialSize * 0.20;
+    auto waveformHeight = dialSize * 0.2;
     auto waveformXGap = (dialSize - waveformWidth) / 2;
     
+    auto tubeOnWidth = dialSize * 0.25;
+    auto tubeOnHeight = dialSize * 0.15;
+    auto tubeOnXGap = (dialSize - tubeOnWidth) / 2;
+    auto tubeOnYGap = getHeight() / 20;
+    
     tube.setBounds(leftMargin, topMargain, dialSize, dialSize);
+    tubeOnOff.setBounds(leftMargin + tubeOnXGap, tube.getBottom() - tubeOnYGap, tubeOnWidth, tubeOnHeight);
+    multiplier.setBounds(tube.getRight() + multiXGap, mutliYGap, multiDialSize, multiDialSize);
+    waveform.setBounds(tube.getRight() + waveformXGap, multiplier.getBottom(), waveformWidth, waveformHeight);
     amountOne.setBounds(leftMargin, tube.getBottom() + dialYGap, dialSize, dialSize);
     amountTwo.setBounds(leftMargin, amountOne.getBottom() + dialYGap, dialSize, dialSize);
     rateOne.setBounds(amountOne.getRight(), tube.getBottom() + dialYGap, dialSize, dialSize);
     rateTwo.setBounds(amountTwo.getRight(), rateOne.getBottom() + dialYGap, dialSize, dialSize);
-    multiplier.setBounds(tube.getRight() + multiXGap, mutliYGap, multiDialSize, multiDialSize);
-    waveform.setBounds(tube.getRight() + waveformXGap, multiplier.getBottom(), waveformWidth, waveformHeight);
+    
 }
