@@ -108,7 +108,7 @@ MyTremoloAudioProcessorEditor::~MyTremoloAudioProcessorEditor()
 void MyTremoloAudioProcessorEditor::paint (juce::Graphics& g)
 {
     juce::Rectangle<int> background = getLocalBounds();
-    g.setGradientFill(juce::ColourGradient::vertical(juce::Colours::gold, getHeight() - getHeight(), juce::Colours::orange.brighter(), getHeight()));
+    g.setGradientFill(juce::ColourGradient::vertical(juce::Colours::orange.brighter(), getHeight() - getHeight(), juce::Colours::orange.brighter(0.7), getHeight()));
     g.fillRect(background);
     
     //Line
