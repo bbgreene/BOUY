@@ -181,12 +181,13 @@ void MyTremoloAudioProcessorEditor::resized()
     lfoTwoLabel.setBounds(lfoLabelXPos, lfoTwoYPos, lfoLabelWidth, lfoLabelHeight);
     
     auto olumayY = getHeight() * 0.9596;
-    auto olumayWidth = getWidth() * 0.233;
+    auto olumayWidth = getWidth() * 0.3;
+    auto tilVersionWidth = getWidth() * 0.233;
     auto allTitlesHeight = getHeight() * 0.0404;
     auto titlesTopMargin = getHeight() * 0.0101;
     
     olumay.setBounds(leftMargin, olumayY, olumayWidth, allTitlesHeight);
-    tilTitle.setBounds(leftMargin, titlesTopMargin, allTitlesHeight * 2, allTitlesHeight);
-    tilVersion.setBounds(tilTitle.getRight(), titlesTopMargin, olumayWidth, allTitlesHeight);
+    tilTitle.setBounds(leftMargin, titlesTopMargin, allTitlesHeight * 2.3, allTitlesHeight);
+    tilVersion.setBounds(tilTitle.getRight(), titlesTopMargin, tilVersionWidth, allTitlesHeight);
     
 }
