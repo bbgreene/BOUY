@@ -60,9 +60,19 @@ MyTremoloAudioProcessorEditor::MyTremoloAudioProcessorEditor (MyTremoloAudioProc
     rateTwoLabel.attachToComponent(&rateTwo, false);
     multiplierLabel.attachToComponent(&multiplier, false);
     
+    //borders
+    addAndMakeVisible(lfoOneBorder);
+    lfoOneBorder.setTextLabelPosition(juce::Justification::centred);
+    lfoOneBorder.setColour(juce::GroupComponent::outlineColourId, juce::Colours::lightgrey);
+    lfoOneBorder.setText("LFO 1");
+    addAndMakeVisible(lfoTwoBorder);
+    lfoTwoBorder.setTextLabelPosition(juce::Justification::centred);
+    lfoTwoBorder.setColour(juce::GroupComponent::outlineColourId, juce::Colours::lightgrey);
+    lfoTwoBorder.setText("LFO 2");
+    
     //tubeOnOff state changing tube dial and rotary fill colour
-    tube.setColour(juce::Slider::thumbColourId, juce::Colours::aliceblue.darker());
-    tube.setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::aliceblue.darker());
+    tube.setColour(juce::Slider::thumbColourId, juce::Colours::aliceblue.darker()); // using this for when plugin is loaded
+    tube.setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::aliceblue.darker()); // using this for when plugin is loaded
     tubeOnOff.onClick = [this]()
     {
         if(static_cast<int>(tubeOnOff.getToggleState()))
@@ -96,14 +106,14 @@ void MyTremoloAudioProcessorEditor::paint (juce::Graphics& g)
 
 void MyTremoloAudioProcessorEditor::resized()
 {
-    auto topMargain = getHeight() / 7.41;
+    auto topMargain = getHeight() / 9.5;
     auto dialSize = getHeight() / 3.85;
     auto dialYGap = getHeight() / 18.18;
     auto leftMargin = (getWidth() - (dialSize * 2)) / 2;
     
     auto multiDialSize = dialSize * 0.8;
     auto multiXGap = (dialSize - multiDialSize) / 2;
-    auto mutliYGap = getHeight() * 0.135;
+    auto mutliYGap = getHeight() * 0.106;
     
     auto waveformWidth = dialSize * 0.6;
     auto waveformHeight = dialSize * 0.19;
@@ -115,13 +125,20 @@ void MyTremoloAudioProcessorEditor::resized()
     auto tubeOnXGap = (dialSize - tubeOnWidth) / 2;
     auto tubeOnYGap = getHeight() / 20;
     
+    auto extraGap = getHeight() / 50;
+    auto border2YGap = getHeight() * 0.01;
+    auto borderSizeExtra = getWidth() * 0.07330;
+    
     tube.setBounds(leftMargin, topMargain, dialSize, dialSize);
     tubeOnOff.setBounds(leftMargin + tubeOnXGap, tube.getBottom() - tubeOnYGap, tubeOnWidth, tubeOnHeight);
     multiplier.setBounds(tube.getRight() + multiXGap, mutliYGap, multiDialSize, multiDialSize);
     waveform.setBounds(tube.getRight() + waveformXGap, multiplier.getBottom() - waveformYGap, waveformWidth, waveformHeight);
-    amountOne.setBounds(leftMargin, tube.getBottom() + dialYGap, dialSize, dialSize);
+    amountOne.setBounds(leftMargin, tube.getBottom() + dialYGap + extraGap, dialSize, dialSize);
     amountTwo.setBounds(leftMargin, amountOne.getBottom() + dialYGap, dialSize, dialSize);
-    rateOne.setBounds(amountOne.getRight(), tube.getBottom() + dialYGap, dialSize, dialSize);
+    rateOne.setBounds(amountOne.getRight(), tube.getBottom() + dialYGap + extraGap, dialSize, dialSize);
     rateTwo.setBounds(amountTwo.getRight(), rateOne.getBottom() + dialYGap, dialSize, dialSize);
+    
+    lfoOneBorder.setBounds(leftMargin, tubeOnOff.getBottom() + extraGap, getWidth() - (leftMargin * 2), dialSize + borderSizeExtra);
+    lfoTwoBorder.setBounds(leftMargin, lfoOneBorder.getBottom() + border2YGap, getWidth() - (leftMargin * 2), dialSize + borderSizeExtra);
     
 }

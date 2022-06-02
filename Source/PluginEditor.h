@@ -59,6 +59,10 @@ private:
     bbg_gui::bbg_dialLabel rateTwoLabel { "Rate" };
     bbg_gui::bbg_dialLabel multiplierLabel { "Multiply" };
     
+    //Borders
+    juce::GroupComponent lfoOneBorder;
+    juce::GroupComponent lfoTwoBorder;
+    
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     MyTremoloAudioProcessor& audioProcessor;
