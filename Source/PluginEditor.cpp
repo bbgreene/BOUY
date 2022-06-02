@@ -115,6 +115,7 @@ void MyTremoloAudioProcessorEditor::resized()
     auto dialSize = getHeight() / 4.0;
     auto dialYGap = getHeight() / 18.18;
     auto leftMargin = (getWidth() - (dialSize * 2)) / 2;
+    auto extraYDialGap = getHeight() / 50;
     
     auto multiDialSize = dialSize * 0.8;
     auto multiXGap = (dialSize - multiDialSize) / 2;
@@ -130,7 +131,7 @@ void MyTremoloAudioProcessorEditor::resized()
     auto tubeOnXGap = (dialSize - tubeOnWidth) / 2;
     auto tubeOnYGap = getHeight() * 0.05;
     
-    auto extraGap = getHeight() / 50;
+    auto border1YGap = getHeight() * 0.0242;
     auto border2YGap = getHeight() * 0.0146;
     auto borderSizeExtra = getWidth() * 0.07330;
     
@@ -138,12 +139,12 @@ void MyTremoloAudioProcessorEditor::resized()
     tubeOnOff.setBounds(leftMargin + tubeOnXGap, tube.getBottom() - tubeOnYGap, tubeOnWidth, tubeOnHeight);
     multiplier.setBounds(tube.getRight() + multiXGap, mutliYGap, multiDialSize, multiDialSize);
     waveform.setBounds(tube.getRight() + waveformXGap, multiplier.getBottom() - waveformYGap, waveformWidth, waveformHeight);
-    amountOne.setBounds(leftMargin, tube.getBottom() + dialYGap + extraGap, dialSize, dialSize);
+    amountOne.setBounds(leftMargin, tube.getBottom() + dialYGap + extraYDialGap, dialSize, dialSize);
     amountTwo.setBounds(leftMargin, amountOne.getBottom() + dialYGap, dialSize, dialSize);
-    rateOne.setBounds(amountOne.getRight(), tube.getBottom() + dialYGap + extraGap, dialSize, dialSize);
+    rateOne.setBounds(amountOne.getRight(), tube.getBottom() + dialYGap + extraYDialGap, dialSize, dialSize);
     rateTwo.setBounds(amountTwo.getRight(), rateOne.getBottom() + dialYGap, dialSize, dialSize);
     
-    lfoOneBorder.setBounds(leftMargin, tubeOnOff.getBottom() + extraGap, getWidth() - (leftMargin * 2), dialSize + borderSizeExtra);
+    lfoOneBorder.setBounds(leftMargin, tubeOnOff.getBottom() + border1YGap, getWidth() - (leftMargin * 2), dialSize + borderSizeExtra);
     lfoTwoBorder.setBounds(leftMargin, lfoOneBorder.getBottom() + border2YGap, getWidth() - (leftMargin * 2), dialSize + borderSizeExtra);
     
 }
