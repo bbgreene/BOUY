@@ -60,14 +60,31 @@ MyTremoloAudioProcessorEditor::MyTremoloAudioProcessorEditor (MyTremoloAudioProc
     rateTwoLabel.attachToComponent(&rateTwo, false);
     multiplierLabel.attachToComponent(&multiplier, false);
     
+    //lfo section labels
     lfoOneLabel.setFont(juce::Font (15.0f, juce::Font::plain));
     lfoOneLabel.setJustificationType(juce::Justification::centred);
-    lfoOneLabel.setColour (juce::Label::textColourId, CustomColours::creamWhite);
+    lfoOneLabel.setColour(juce::Label::textColourId, CustomColours::creamWhite);
     addAndMakeVisible(lfoOneLabel);
     lfoTwoLabel.setFont(juce::Font (15.0f, juce::Font::plain));
     lfoTwoLabel.setJustificationType(juce::Justification::centred);
-    lfoTwoLabel.setColour (juce::Label::textColourId, CustomColours::creamWhite);
+    lfoTwoLabel.setColour(juce::Label::textColourId, CustomColours::creamWhite);
     addAndMakeVisible(lfoTwoLabel);
+    
+    //Titles
+    tilTitle.setFont(juce::Font (26.0f, juce::Font::plain));
+    tilTitle.setJustificationType(juce::Justification::centredLeft);
+    tilTitle.setColour(juce::Label::textColourId, juce::Colours::darkslategrey);
+    addAndMakeVisible(tilTitle);
+
+    tilVersion.setFont(juce::Font (15.0f, juce::Font::plain));
+    tilVersion.setJustificationType(juce::Justification::centredLeft);
+    tilVersion.setColour(juce::Label::textColourId, juce::Colours::mintcream);
+    addAndMakeVisible(tilVersion);
+    
+    olumay.setFont(juce::Font (15.0f, juce::Font::plain));
+    olumay.setJustificationType(juce::Justification::centredLeft);
+    olumay.setColour(juce::Label::textColourId, juce::Colours::rebeccapurple);
+    addAndMakeVisible(olumay);
     
     //tubeOnOff state changing tube dial and rotary fill colour
     tube.setColour(juce::Slider::thumbColourId, juce::Colours::aliceblue.darker(0.2)); // using this for when plugin is loaded
@@ -162,5 +179,14 @@ void MyTremoloAudioProcessorEditor::resized()
     
     lfoOneLabel.setBounds(lfoLabelXPos, lfoOneYPos, lfoLabelWidth, lfoLabelHeight);
     lfoTwoLabel.setBounds(lfoLabelXPos, lfoTwoYPos, lfoLabelWidth, lfoLabelHeight);
+    
+    auto olumayY = getHeight() * 0.9596;
+    auto olumayWidth = getWidth() * 0.233;
+    auto allTitlesHeight = getHeight() * 0.0404;
+    auto titlesTopMargin = getHeight() * 0.0101;
+    
+    olumay.setBounds(leftMargin, olumayY, olumayWidth, allTitlesHeight);
+    tilTitle.setBounds(leftMargin, titlesTopMargin, allTitlesHeight * 2, allTitlesHeight);
+    tilVersion.setBounds(tilTitle.getRight(), titlesTopMargin, olumayWidth, allTitlesHeight);
     
 }
