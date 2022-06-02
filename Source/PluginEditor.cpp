@@ -68,7 +68,7 @@ MyTremoloAudioProcessorEditor::MyTremoloAudioProcessorEditor (MyTremoloAudioProc
     addAndMakeVisible(lfoTwoBorder);
     lfoTwoBorder.setTextLabelPosition(juce::Justification::centred);
     lfoTwoBorder.setColour(juce::GroupComponent::outlineColourId, juce::Colours::lightgrey);
-    lfoTwoBorder.setText("LFO 2");
+    lfoTwoBorder.setText("LFO 2 > LFO 1 rate");
     
     //tubeOnOff state changing tube dial and rotary fill colour
     tube.setColour(juce::Slider::thumbColourId, juce::Colours::aliceblue.darker()); // using this for when plugin is loaded
@@ -87,9 +87,14 @@ MyTremoloAudioProcessorEditor::MyTremoloAudioProcessorEditor (MyTremoloAudioProc
         }
     };
     
+    //Resizing
+    setResizable(true, true);
+    setResizeLimits(270, 495, 324, 594); // max limits are min * 1.2
+    getConstrainer()->setFixedAspectRatio(0.55);
+    
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    setSize (300, 500);
+    setSize (270, 495);
 }
 
 MyTremoloAudioProcessorEditor::~MyTremoloAudioProcessorEditor()
@@ -106,27 +111,27 @@ void MyTremoloAudioProcessorEditor::paint (juce::Graphics& g)
 
 void MyTremoloAudioProcessorEditor::resized()
 {
-    auto topMargain = getHeight() / 9.5;
-    auto dialSize = getHeight() / 3.85;
+    auto topMargain = getHeight() / 8;
+    auto dialSize = getHeight() / 4.0;
     auto dialYGap = getHeight() / 18.18;
     auto leftMargin = (getWidth() - (dialSize * 2)) / 2;
     
     auto multiDialSize = dialSize * 0.8;
     auto multiXGap = (dialSize - multiDialSize) / 2;
-    auto mutliYGap = getHeight() * 0.106;
+    auto mutliYGap = getHeight() * 0.1255;
     
     auto waveformWidth = dialSize * 0.6;
     auto waveformHeight = dialSize * 0.19;
     auto waveformXGap = (dialSize - waveformWidth) / 2;
-    auto waveformYGap = getHeight() / 125;
+    auto waveformYGap = getHeight() * 0.0146;
     
     auto tubeOnWidth = dialSize * 0.25;
     auto tubeOnHeight = dialSize * 0.15;
     auto tubeOnXGap = (dialSize - tubeOnWidth) / 2;
-    auto tubeOnYGap = getHeight() / 20;
+    auto tubeOnYGap = getHeight() * 0.05;
     
     auto extraGap = getHeight() / 50;
-    auto border2YGap = getHeight() * 0.01;
+    auto border2YGap = getHeight() * 0.0146;
     auto borderSizeExtra = getWidth() * 0.07330;
     
     tube.setBounds(leftMargin, topMargain, dialSize, dialSize);
