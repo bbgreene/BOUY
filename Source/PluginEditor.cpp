@@ -71,15 +71,15 @@ MyTremoloAudioProcessorEditor::MyTremoloAudioProcessorEditor (MyTremoloAudioProc
     addAndMakeVisible(lfoTwoLabel);
     
     //Titles
-    tilTitle.setFont(juce::Font (26.0f, juce::Font::plain));
-    tilTitle.setJustificationType(juce::Justification::centredLeft);
-    tilTitle.setColour(juce::Label::textColourId, juce::Colours::darkslategrey);
-    addAndMakeVisible(tilTitle);
+    bouyTitle.setFont(juce::Font (26.0f, juce::Font::plain));
+    bouyTitle.setJustificationType(juce::Justification::centredLeft);
+    bouyTitle.setColour(juce::Label::textColourId, juce::Colours::darkslategrey);
+    addAndMakeVisible(bouyTitle);
 
-    tilVersion.setFont(juce::Font (15.0f, juce::Font::plain));
-    tilVersion.setJustificationType(juce::Justification::centredLeft);
-    tilVersion.setColour(juce::Label::textColourId, juce::Colours::mintcream);
-    addAndMakeVisible(tilVersion);
+    bouyVersion.setFont(juce::Font (15.0f, juce::Font::plain));
+    bouyVersion.setJustificationType(juce::Justification::centredLeft);
+    bouyVersion.setColour(juce::Label::textColourId, juce::Colours::mintcream);
+    addAndMakeVisible(bouyVersion);
     
     olumay.setFont(juce::Font (15.0f, juce::Font::plain));
     olumay.setJustificationType(juce::Justification::centredLeft);
@@ -182,12 +182,12 @@ void MyTremoloAudioProcessorEditor::resized()
     
     auto olumayY = getHeight() * 0.9596;
     auto olumayWidth = getWidth() * 0.3;
-    auto tilVersionWidth = getWidth() * 0.233;
+    auto bouyVersionWidth = getWidth() * 0.233;
     auto allTitlesHeight = getHeight() * 0.0404;
     auto titlesTopMargin = getHeight() * 0.0101;
     
     olumay.setBounds(leftMargin, olumayY, olumayWidth, allTitlesHeight);
-    tilTitle.setBounds(leftMargin, titlesTopMargin, allTitlesHeight * 2.3, allTitlesHeight);
-    tilVersion.setBounds(tilTitle.getRight(), titlesTopMargin, tilVersionWidth, allTitlesHeight);
+    bouyTitle.setBounds(leftMargin, titlesTopMargin, allTitlesHeight * 3.9, allTitlesHeight);
+    bouyVersion.setBounds(bouyTitle.getRight(), titlesTopMargin, bouyVersionWidth, allTitlesHeight);
     
 }

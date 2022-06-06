@@ -61,8 +61,8 @@ private:
     bbg_gui::bbg_dialLabel lfoOneLabel { "LFO 1" };
     bbg_gui::bbg_dialLabel lfoTwoLabel { "LFO 2" };
     bbg_gui::bbg_dialLabel olumay { "Olumay dsp" };
-    bbg_gui::bbg_dialLabel tilTitle { "T I L" };
-    bbg_gui::bbg_dialLabel tilVersion { "version 1.1" };
+    bbg_gui::bbg_dialLabel bouyTitle { "B O U Y" };
+    bbg_gui::bbg_dialLabel bouyVersion { "version 1.1" };
     
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
