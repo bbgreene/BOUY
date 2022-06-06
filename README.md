@@ -1,4 +1,4 @@
-# BOUY
+# B O U Y
 
 An audio tremolo vst plugin made with JUCE.
 
@@ -24,4 +24,4 @@ An audio tremolo vst plugin made with JUCE.
  Amount: how much LFO 1 will deviate from its set frequency ( 0 - 100 Hz)\
  Rate: the rate of frequency modulation applied to LFO 1 (0 - 1 Hz)
  
-Next steps: BPM sync for LFO one frequency, adjust multiplier values and create GUI
+Next steps: BPM sync for LFO one frequency
