@@ -51,14 +51,55 @@ juce::AudioProcessorValueTreeState::ParameterLayout MyTremoloAudioProcessor::cre
     //LFO One waveform names
     juce::StringArray waveformSelector = {"Sine", "Triangle", "Sloped Square", "Ring"};
     
-    auto pTube = std::make_unique<juce::AudioParameterFloat>("tube", "Tube", juce::NormalisableRange<float>(0.00, 100.0, 0.01, 0.3), 0.0);
+    auto pTube = std::make_unique<juce::AudioParameterFloat>("tube",
+                                                             "Tube",
+                                                             juce::NormalisableRange<float>(0.00, 100.0, 0.1, 0.3),
+                                                             0.0,
+                                                             juce::String(),
+                                                             juce::AudioProcessorParameter::genericParameter,
+                                                             [](float value, int) {return (value < 100.0f) ? juce::String (value, 1) + " %" : juce::String (value, 0) + " %";},
+                                                             [](juce::String text) {return text.dropLastCharacters (3).getFloatValue();});
+    
     auto pTubeOnOff = std::make_unique<juce::AudioParameterBool>("tubeOnOff", "TubeOnOff", 0);
     auto pMultiplier = std::make_unique<juce::AudioParameterInt>("multiply", "Multiply", 1, 5, 1);
     auto pWaveform = std::make_unique<juce::AudioParameterChoice>("wave", "Wave", waveformSelector, 0);
-    auto pDepthOne = std::make_unique<juce::AudioParameterFloat>("lfo one depth", "LFO 1 Depth", 0.0, 100.0, 0.0);
-    auto pFreqOne = std::make_unique<juce::AudioParameterFloat>("lfo one rate", "LFO 1 Rate", juce::NormalisableRange<float>(0.01, 100.0, 0.01, 0.4), 0.01);
-    auto pDepthTwo = std::make_unique<juce::AudioParameterFloat>("lfo two depth", "LFO 2 Depth", juce::NormalisableRange<float>(0.00, 100.0, 0.01, 0.3), 0.00);
-    auto pFreqTwo = std::make_unique<juce::AudioParameterFloat>("lfo two rate", "LFO 2 Rate", juce::NormalisableRange<float>(0.11, 1.0, 0.1, 1.0), 0.1);
+    
+    auto pDepthOne = std::make_unique<juce::AudioParameterFloat>("lfo one depth",
+                                                                 "LFO 1 Depth",
+                                                                 juce::NormalisableRange<float>(0.00, 100.0, 0.1, 1.0),
+                                                                 0.0,
+                                                                 juce::String(),
+                                                                 juce::AudioProcessorParameter::genericParameter,
+                                                                 [](float value, int) {return (value < 100.0f) ? juce::String (value, 1) + " %" : juce::String (value, 0) + " %";},
+                                                                 [](juce::String text) {return text.dropLastCharacters (3).getFloatValue();});
+    
+    auto pFreqOne = std::make_unique<juce::AudioParameterFloat>("lfo one rate",
+                                                                "LFO 1 Rate",
+                                                                juce::NormalisableRange<float>(0.01, 100.0, 0.01, 0.4),
+                                                                0.01,
+                                                                juce::String(),
+                                                                juce::AudioProcessorParameter::genericParameter,
+                                                                [](float value, int) {return (value < 10.0f) ? juce::String (value, 2) + " Hz" : ((value == 100.0f) ? juce::String (value, 0) + " Hz" : juce::String (value, 1) + " Hz" );},
+                                                                [](juce::String text) {return text.dropLastCharacters (3).getFloatValue();});
+   
+    
+    auto pDepthTwo = std::make_unique<juce::AudioParameterFloat>("lfo two depth",
+                                                                 "LFO 2 Depth",
+                                                                 juce::NormalisableRange<float>(0.00, 100.0, 0.01, 0.5),
+                                                                 0.0,
+                                                                 juce::String(),
+                                                                 juce::AudioProcessorParameter::genericParameter,
+                                                                 [](float value, int) {return (value < 100.0f) ? juce::String (value, 1) + " %" : juce::String (value, 0) + " %";},
+                                                                 [](juce::String text) {return text.dropLastCharacters (3).getFloatValue();});
+    
+    auto pFreqTwo = std::make_unique<juce::AudioParameterFloat>("lfo two rate",
+                                                                "LFO 2 Rate",
+                                                                juce::NormalisableRange<float>(0.01, 1.0, 0.01, 1.0),
+                                                                0.01,
+                                                                juce::String(),
+                                                                juce::AudioProcessorParameter::genericParameter,
+                                                                [](float value, int) {return (value < 1.0f) ? juce::String (value, 2) + " Hz" : juce::String (value, 1) + " Hz" ;},
+                                                                [](juce::String text) {return text.dropLastCharacters (3).getFloatValue();});
     
     params.push_back(std::move(pTube));
     params.push_back(std::move(pTubeOnOff));

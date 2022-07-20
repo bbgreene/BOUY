@@ -24,7 +24,6 @@ MyTremoloAudioProcessorEditor::MyTremoloAudioProcessorEditor (MyTremoloAudioProc
     
     //tubeOnOff state changing tube dial and rotary fill colour
     tubeOnOff.setClickingTogglesState(true);
-    tubeOnOff.setButtonText("On");
     if(static_cast<int>(tubeOnOff.getToggleState()))
     {
         tube.setColour(juce::Slider::thumbColourId, juce::Colours::aliceblue);

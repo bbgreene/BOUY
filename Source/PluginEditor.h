@@ -32,11 +32,11 @@ public:
 private:
     
     //UI dials and Buttons
-    bbg_gui::bbg_Dial tube { " %", 0.0, 100.0, 0.01, 0.0, 0.0 };
-    bbg_gui::bbg_Dial amountOne { " %", 0.0, 100.0, 0.01, 0.0, 0.0 };
-    bbg_gui::bbg_Dial rateOne { " Hz", 0.01, 100.0, 0.01, 0.01, 0.0 };
-    bbg_gui::bbg_Dial amountTwo { " %", 0.0, 100.0, 0.01, 0.0, 0.0 };
-    bbg_gui::bbg_Dial rateTwo { " Hz", 0.1, 1.0, 0.1, 0.0, 0.0 };
+    bbg_gui::bbg_Dial tube { "", 0.0, 100.0, 0.1, 0.0, 0.0 };
+    bbg_gui::bbg_Dial amountOne { "", 0.0, 100.0, 0.1, 0.0, 0.0 };
+    bbg_gui::bbg_Dial rateOne { "", 0.01, 100.0, 0.01, 0.01, 0.0 };
+    bbg_gui::bbg_Dial amountTwo { "", 0.0, 100.0, 0.01, 0.0, 0.0 };
+    bbg_gui::bbg_Dial rateTwo { "", 0.01, 1.0, 0.01, 0.01, 0.0 };
     bbg_gui::bbg_Dial multiplier { " x", 1.0, 5.0, 1.0, 1.0, 0.0 };
     bbg_gui::bbg_Menu waveform;
     bbg_gui::bbg_PushButton tubeOnOff { "On" };
