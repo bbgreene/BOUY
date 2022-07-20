@@ -22,6 +22,31 @@ MyTremoloAudioProcessorEditor::MyTremoloAudioProcessorEditor (MyTremoloAudioProc
     tubeAttachement = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.treeState, "tube", tube);
     addAndMakeVisible(tube);
     
+    //tubeOnOff state changing tube dial and rotary fill colour
+    tubeOnOff.setClickingTogglesState(true);
+    tubeOnOff.setButtonText("On");
+    if(static_cast<int>(tubeOnOff.getToggleState()))
+    {
+        tube.setColour(juce::Slider::thumbColourId, juce::Colours::aliceblue);
+        tube.setColour(juce::Slider::rotarySliderFillColourId, CustomColours::creamWhite);
+        tubeOnOff.setColour(juce::TextButton::ColourIds::textColourOnId, juce::Colours::aliceblue);
+    }
+    tube.setColour(juce::Slider::thumbColourId, juce::Colours::aliceblue.darker(0.2));
+    tube.setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::aliceblue.darker(0.2));
+    tubeOnOff.onClick = [this]()
+    {
+        if(static_cast<int>(tubeOnOff.getToggleState()))
+        {
+            tube.setColour(juce::Slider::thumbColourId, juce::Colours::aliceblue);
+            tube.setColour(juce::Slider::rotarySliderFillColourId, CustomColours::creamWhite);
+            tubeOnOff.setColour(juce::TextButton::ColourIds::textColourOnId, juce::Colours::aliceblue);
+        }
+        else
+        {
+            tube.setColour(juce::Slider::thumbColourId, juce::Colours::aliceblue.darker(0.2));
+            tube.setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::aliceblue.darker(0.2));
+        }
+    };
     tubeOnOffAttachement = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.treeState, "tubeOnOff", tubeOnOff);
     addAndMakeVisible(tubeOnOff);
     
@@ -86,27 +111,6 @@ MyTremoloAudioProcessorEditor::MyTremoloAudioProcessorEditor (MyTremoloAudioProc
     olumay.setJustificationType(juce::Justification::centredLeft);
     olumay.setColour(juce::Label::textColourId, juce::Colours::rebeccapurple);
     addAndMakeVisible(olumay);
-    
-    //tubeOnOff state changing tube dial and rotary fill colour
-    tube.setColour(juce::Slider::thumbColourId, juce::Colours::aliceblue.darker(0.2)); // using this for when plugin is loaded
-    tube.setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::aliceblue.darker(0.2)); // using this for when plugin is loaded
-    tubeOnOff.setButtonText("Off");
-    tubeOnOff.onClick = [this]()
-    {
-        if(static_cast<int>(tubeOnOff.getToggleState()))
-        {
-            tube.setColour(juce::Slider::thumbColourId, juce::Colours::aliceblue);
-            tube.setColour(juce::Slider::rotarySliderFillColourId, CustomColours::creamWhite);
-            tubeOnOff.setColour(juce::TextButton::ColourIds::textColourOnId, juce::Colours::aliceblue);
-            tubeOnOff.setButtonText("On");
-        }
-        else
-        {
-            tube.setColour(juce::Slider::thumbColourId, juce::Colours::aliceblue.darker(0.2));
-            tube.setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::aliceblue.darker(0.2));
-            tubeOnOff.setButtonText("Off");
-        }
-    };
     
     //Resizing
     setResizable(true, true);
