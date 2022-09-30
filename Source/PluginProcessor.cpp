@@ -57,8 +57,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout MyTremoloAudioProcessor::cre
                                                              0.0,
                                                              juce::String(),
                                                              juce::AudioProcessorParameter::genericParameter,
-                                                             [](float value, int) {return (value < 100.0f) ? juce::String (value, 1) + " %" : juce::String (value, 0) + " %";},
-                                                             [](juce::String text) {return text.dropLastCharacters (3).getFloatValue();});
+                                                             [](float value, int) {return (value < 100.0f) ? juce::String (value, 1) + " %" : juce::String (value, 0) + " %";});
     
     auto pTubeOnOff = std::make_unique<juce::AudioParameterBool>("tubeOnOff", "TubeOnOff", 0);
     auto pMultiplier = std::make_unique<juce::AudioParameterInt>("multiply", "Multiply", 1, 5, 1);
@@ -70,8 +69,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout MyTremoloAudioProcessor::cre
                                                                  0.0,
                                                                  juce::String(),
                                                                  juce::AudioProcessorParameter::genericParameter,
-                                                                 [](float value, int) {return (value < 100.0f) ? juce::String (value, 1) + " %" : juce::String (value, 0) + " %";},
-                                                                 [](juce::String text) {return text.dropLastCharacters (3).getFloatValue();});
+                                                                 [](float value, int) {return (value < 100.0f) ? juce::String (value, 1) + " %" : juce::String (value, 0) + " %";});
     
     auto pFreqOne = std::make_unique<juce::AudioParameterFloat>("lfo one rate",
                                                                 "LFO 1 Rate",
@@ -79,8 +77,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout MyTremoloAudioProcessor::cre
                                                                 0.01,
                                                                 juce::String(),
                                                                 juce::AudioProcessorParameter::genericParameter,
-                                                                [](float value, int) {return (value < 10.0f) ? juce::String (value, 2) + " Hz" : ((value == 100.0f) ? juce::String (value, 0) + " Hz" : juce::String (value, 1) + " Hz" );},
-                                                                [](juce::String text) {return text.dropLastCharacters (3).getFloatValue();});
+                                                                [](float value, int) {return (value < 10.0f) ? juce::String (value, 2) + " Hz" : ((value == 100.0f) ? juce::String (value, 0) + " Hz" : juce::String (value, 1) + " Hz" );});
    
     
     auto pDepthTwo = std::make_unique<juce::AudioParameterFloat>("lfo two depth",
@@ -89,8 +86,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout MyTremoloAudioProcessor::cre
                                                                  0.0,
                                                                  juce::String(),
                                                                  juce::AudioProcessorParameter::genericParameter,
-                                                                 [](float value, int) {return (value < 100.0f) ? juce::String (value, 1) + " %" : juce::String (value, 0) + " %";},
-                                                                 [](juce::String text) {return text.dropLastCharacters (3).getFloatValue();});
+                                                                 [](float value, int) {return (value < 100.0f) ? juce::String (value, 1) + " %" : juce::String (value, 0) + " %";});
     
     auto pFreqTwo = std::make_unique<juce::AudioParameterFloat>("lfo two rate",
                                                                 "LFO 2 Rate",
@@ -98,8 +94,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout MyTremoloAudioProcessor::cre
                                                                 0.01,
                                                                 juce::String(),
                                                                 juce::AudioProcessorParameter::genericParameter,
-                                                                [](float value, int) {return (value < 1.0f) ? juce::String (value, 2) + " Hz" : juce::String (value, 1) + " Hz" ;},
-                                                                [](juce::String text) {return text.dropLastCharacters (3).getFloatValue();});
+                                                                [](float value, int) {return (value < 1.0f) ? juce::String (value, 2) + " Hz" : juce::String (value, 1) + " Hz" ;});
     
     params.push_back(std::move(pTube));
     params.push_back(std::move(pTubeOnOff));
