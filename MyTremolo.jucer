@@ -3,7 +3,7 @@
 <JUCERPROJECT id="ZFzeVJ" name="MyTremolo" projectType="audioplug" useAppConfig="0"
               addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" cppLanguageStandard="17"
               pluginName="BOUY" pluginDesc="Tremolo with tube distortion" pluginManufacturer="Olumay dsp"
-              pluginAUExportPrefix="BOUYAU">
+              pluginAUExportPrefix="BOUYAU" companyName="Olumay dsp" companyWebsite="https://bbgreene.github.io/">
   <MAINGROUP id="HtrFKp" name="MyTremolo">
     <GROUP id="{E0BA08D6-F911-8901-B669-A9241F24D2E6}" name="Source">
       <GROUP id="{E036EA07-806B-4AD1-6FEA-E20901AF3D1A}" name="bbg_gui">
